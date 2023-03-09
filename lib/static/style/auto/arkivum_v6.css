@@ -1,0 +1,154 @@
+.led_panel {
+  display: flex;
+  margin-top: 10px;
+}
+.led {
+/*    flex: 1;*/
+    margin: 5px 10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: #000 0 -1px 6px 1px;
+}
+.led_FAILED {
+    background-color: #F00;
+    box-shadow: #000 0 -1px 6px 1px, inset #600 0 -1px 8px, #F00 0 3px 11px;
+}
+.led_PENDING {
+    background-color: #FF0;
+    box-shadow: #000 0 -1px 6px 1px, inset #660 0 -1px 8px, #FF0 0 3px 11px;
+}
+
+.led_PROCESSING {
+    background-color: #FF0;
+    box-shadow: #000 0 -1px 6px 1px, inset #660 0 -1px 8px, #FF0 0 3px 11px;
+}
+
+.led_REQUESTED {
+    background-color: #FF0;
+    box-shadow: #000 0 -1px 6px 1px, inset #660 0 -1px 8px, #FF0 0 3px 11px;
+}
+
+.led-yellow {
+    background-color: #FF0;
+    box-shadow: #000 0 -1px 6px 1px, inset #660 0 -1px 8px, #FF0 0 3px 11px;
+}
+
+.led_SUCCESS {
+    background-color: #80FF00;
+    box-shadow: #000 0 -1px 6px 1px, inset #460 0 -1px 8px, #80FF00 0 3px 11px;
+}
+
+.led-blue {
+    background-color: #06F;
+    box-shadow: #000 0 -1px 6px 1px, inset #006 0 -1px 8px, #06F 0 3px 11px;
+}
+
+.arkivum_transaction a, .arkivum_transaction a:hover , .arkivum_transaction a:visited {
+  text-decoration: none!important;
+}
+
+.arkivum_report.ep_table {
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+.arkivum_report.ep_table .ep_table_row {
+  border: 1px solid #ccc;
+}
+
+.arkivum_report.ep_table .ep_table_cell {
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+
+.arkivum_actions {
+  margin: 10px;
+}
+
+.arkivum_report.ep_table .ep_table_cell.ep_table_colspan,
+.arkivum_report.ep_table .ep_table_cell.ep_table_colspan+.ep_table_cell {
+  border: 0;
+}
+
+.arkivum_report.ep_table .ep_table_cell.ep_table_colspan>div {
+  width: 1px;
+}
+
+.arkivum_report.ep_table .ep_table_cell.ep_table_colspan>div>div {
+  position: relative;
+  width: 99px;
+  overflow: hidden;
+}
+
+.arkivum_report.ep_table .ep_table_cell.arkivum_status_light {
+    padding: 0px;
+    position: relative;
+    top: 5px;
+}
+
+#ep_arkivum_view_panels > div {
+ display: none;
+}
+
+#ep_arkivum_view_panels > div:first-child {
+ display: block;
+}
+
+/*******************************/
+/* Legacy styles may be useful */
+/*******************************/
+
+.arkivum_document{
+    display: block;
+    border: solid 1px #bbb;
+    border-right: solid 7px grey;
+}
+
+.arkivum_document.arkivum_RED{
+    border-right-color: red;
+}
+
+.arkivum_document.arkivum_INDIGO{
+    border-right-color: indigo;
+}
+
+ .arkivum_document.arkivum_PURPLE{
+    border-right-color: purple;
+}
+
+.arkivum_document.arkivum_BLUE{
+    border-right-color: blue;
+}
+
+.arkivum_document.arkivum_ORANGE{
+    border-right-color: orange;
+}
+
+.arkivum_document.arkivum_YELLOW{
+    border-right-color: yellow;
+}
+
+ .arkivum_document.arkivum_GREEN{
+    border-right-color: green;
+}
+
+.arkivum_document > div{
+    vertical-align: middle;
+    padding: 0px 5px;
+}
+
+.arkivum_document_citation{
+    display: inline-block;
+}
+
+.arkivum_document_citation .ep_table_cell{
+    vertical-align: middle;
+}
+
+.arkivum_document_status{
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+}

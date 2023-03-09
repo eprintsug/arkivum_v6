@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+<!-- 
+    Citation Styles for user records.
+-->
+<cite:citation xmlns="http://www.w3.org/1999/xhtml" xmlns:cite="http://eprints.org/ep3/citation" xmlns:epc="http://eprints.org/ep3/control">
+  <h2>Arkivum record for <epc:print expr="$object_title"/></h2>
+  <epc:print expr="$arkivum_actions"/>
+  <h3>Arkivum ingest report</h3>
+  <epc:set name="arkivum_status" expr="$arkivum_status">
+    <epc:choose>
+      <epc:when test="is_set($arkivum_status{errorMessage})">
+        <p>Pre-ingest error : <strong><epc:print expr="$arkivum_status{errorMessage}"/></strong></p>
+      </epc:when>
+      <epc:otherwise>
+        <ul id="ep_arkivum_view_tabs" class="nav-justified nav nav-tabs">
+          <epc:foreach expr="$config{arkivum}{processes}" iterator="process">
+            <epc:choose>
+              <epc:when test="$index gt 0">
+                <li id="ep_arkivum_view_tab_{$index}" style="" class="">
+                  <a href="#" onclick="return ep_showTab('ep_arkivum_view','{$index}',0);">
+                    <print expr="$process"/>
+                  </a>
+                </li>
+              </epc:when>
+              <epc:otherwise>
+                <li id="ep_arkivum_view_tab_{$index}" style="" class="active">
+                  <a href="#" onclick="return ep_showTab('ep_arkivum_view','{$index}',0);">
+                    <print expr="$process"/>
+                  </a>
+                </li>
+              </epc:otherwise>
+            </epc:choose>
+          </epc:foreach>
+          <!--    <li class="" id="ep_arkivum_view_tab_0" style=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','0',0);">METADATA_PROCESSING</a></li> -->
+          <!--    <li id="ep_arkivum_view_tab_1" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','1',0);">CACHING</a></li>-->
+          <!--    <li id="ep_arkivum_view_tab_2" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','2',0);">METADATA_EXTRACTION</a></li>
+    <li id="ep_arkivum_view_tab_3" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','3',0);">INDEXING</a></li>
+    <li id="ep_arkivum_view_tab_4" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','4',0);">INTEGRITY_CHECK</a></li>
+    <li id="ep_arkivum_view_tab_5" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','5',0);">VIRUS_SCAN</a></li>
+    <li id="ep_arkivum_view_tab_6" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','6',0);">ENCRYPTION</a></li>
+    <li id="ep_arkivum_view_tab_7" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','7',0);">REPLICATION</a></li>
+    <li id="ep_arkivum_view_tab_8" style="" class=""><a href="#" onclick="return ep_showTab('ep_arkivum_view','8',0);">FIXITY</a></li> -->
+        </ul>
+        <div id="ep_arkivum_view_panels" class="ep_tab_panel">
+          <!--    <epc:foreach expr="$config{arkivum}{processes}" iterator="process"> -->
+          <div id="ep_arkivum_view_panel_0">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header"/>
+              <epc:foreach expr="$arkivum_status{METADATA_PROCESSING}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <epc:phrase ref="arkivum_aggregation_{$aggregation{aggregationType}}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <!--    </epc:foreach> -->
+          <!--
+    <div id="ep_arkivum_view_panel_1">
+      <div class="ep_table arkivum_report">
+        <epc:phrase ref="arkivum_report_table_header"/>
+      <epc:foreach expr="$arkivum_status{CACHING}" iterator="aggregation">
+            <div class="ep_table_row">
+          <div class="ep_table_cell"><print expr="$aggregation{aggregationType}"/></div>
+          <div class="ep_table_cell">
+            <epc:choose>
+          <epc:when test="is_set($aggregation{relativePath})"><epc:print expr="$aggregation{relativePath}"/></epc:when>
+          <epc:otherwise><epc:print expr="$aggregation{id}"/></epc:otherwise>
+          </epc:choose>
+          </div>
+              <div class="ep_table_cell"><print expr="$aggregation{status}"/></div>
+            </div>
+          </epc:foreach>
+      </div>
+    </div>
+-->
+          <div id="ep_arkivum_view_panel_1">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header"/>
+              <epc:foreach expr="$arkivum_status{METADATA_EXTRACTION}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_2">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header"/>
+              <epc:foreach expr="$arkivum_status{INDEXING}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_3">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header"/>
+              <epc:foreach expr="$arkivum_status{INTEGRITY_CHECK}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_4">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header"/>
+              <epc:foreach expr="$arkivum_status{VIRUS_SCAN}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_5">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header_w_location"/>
+              <epc:foreach expr="$arkivum_status{ENCRYPTION}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{location})">
+                        <epc:print expr="$aggregation{location}"/>
+                      </epc:when>
+                      <epc:otherwise>N/A</epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_6">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header_w_location"/>
+              <epc:foreach expr="$arkivum_status{REPLICATION}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{location})">
+                        <epc:print expr="$aggregation{location}"/>
+                      </epc:when>
+                      <epc:otherwise>N/A</epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+          <div id="ep_arkivum_view_panel_7">
+            <div class="ep_table arkivum_report">
+              <epc:phrase ref="arkivum_report_table_header_w_location"/>
+              <epc:foreach expr="$arkivum_status{FIXITY}" iterator="aggregation">
+                <div class="ep_table_row">
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{aggregationType}"/>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{relativePath})">
+                        <epc:print expr="$aggregation{relativePath}"/>
+                      </epc:when>
+                      <epc:otherwise>
+                        <epc:print expr="$aggregation{id}"/>
+                      </epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <epc:choose>
+                      <epc:when test="is_set($aggregation{location})">
+                        <epc:print expr="$aggregation{location}"/>
+                      </epc:when>
+                      <epc:otherwise>N/A</epc:otherwise>
+                    </epc:choose>
+                  </div>
+                  <div class="ep_table_cell">
+                    <print expr="$aggregation{status}"/>
+                  </div>
+                  <div class="ep_table_cell arkivum_status_light">
+                    <div class="led led_{$aggregation{status}}"/>
+                  </div>
+                </div>
+              </epc:foreach>
+            </div>
+          </div>
+        </div>
+        <!-- #ep_arkivum_vie_panels -->
+      </epc:otherwise>
+    </epc:choose>
+  </epc:set>
+</cite:citation>

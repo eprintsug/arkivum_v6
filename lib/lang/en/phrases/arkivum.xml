@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE phrases SYSTEM "entities.dtd">
+<epp:phrases xmlns="http://www.w3.org/1999/xhtml" xmlns:epp="http://eprints.org/ep3/phrase" xmlns:epc="http://eprints.org/ep3/control">
+
+
+<epp:phrase id="eprint_fieldname_archive_status">Archive Status</epp:phrase>
+<epp:phrase id="eprint_fieldname_arkivums">Arkivum</epp:phrase>
+
+<epp:phrase id="lib/searchfield:help_counter">Help</epp:phrase>
+<epp:phrase id="lib/searchfield:help_multipart">any of</epp:phrase>
+
+<epp:phrase id="eprint_fieldopt_archive_status_archive_approved">Approved</epp:phrase>
+
+<epp:phrase id="arkivum:workflow:stage:default:title">EPrint Restore Approval</epp:phrase>
+
+<epp:phrase id="datasetname_arkivum">Arkivum Transactions</epp:phrase>
+<epp:phrase id="datasethelp_arkivum">View Arkivum storage transactions</epp:phrase>
+
+
+<epp:phrase id="arkivum_fieldname_arkivumid">Id</epp:phrase>
+<epp:phrase id="arkivum_fieldname_docid">Document</epp:phrase>
+<epp:phrase id="arkivum_fieldname_checksum">Arkivum Checksum</epp:phrase>
+<epp:phrase id="arkivum_fieldname_justification">Reason</epp:phrase>
+<epp:phrase id="arkivum_fieldname_access_date">Access Date</epp:phrase>
+<epp:phrase id="arkivum_fieldname_arkivum_status">Arkivum Status</epp:phrase>
+<epp:phrase id="arkivum_fieldname_userid">Owner</epp:phrase>
+<epp:phrase id="arkivum_fieldname_parentid">Parent Task ID</epp:phrase>
+<epp:phrase id="arkivum_fieldname_hash">MD5 Checksum</epp:phrase>
+<epp:phrase id="arkivum_fieldname_arkivum_request_uuid">Request UUID</epp:phrase>
+
+
+<epp:phrase id="arkivum:workflow:stage:default:title">Archive Approval</epp:phrase>
+<epp:phrase id="lib/submissionform:action_delete">Delete Archive</epp:phrase>
+
+
+<epp:phrase id="eprint_fieldopt_archive_status_archive_requested">Archive Requested</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_archive_approved">Archive Approved</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_archive_in_progress">Archive In Progress</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_archived">Archived</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_restore_approved">Restore Approved</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_restore_failed">Restore Failed</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_restored">Restored</epp:phrase>
+<epp:phrase id="eprint_fieldopt_archive_status_restore_failed">Restore Failed</epp:phrase>
+
+
+<epp:phrase id="arkivum_fieldopt_arkivum_status_archive_scheduled">File Scheduled for Archiving</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_ingest_in_progress">File Being Archived</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_ingested">File Copied to Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_replicated">File Replicated to Data Centre</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_escrow">File Securely Archived</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_archive_failed">File Archive Failed</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_scheduled">File Scheduled for Deletion</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_in_progress">File Deletion In Progress</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_deleted">File Deleted From Arkivum</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_failed">File Deletion Failed</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_scheduled">File Scheduled for Restore to Arkivum Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_in_progress">Restore to Applpiance In Progress</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restored">File Restored to Arkivum Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_failed">Restore Failed</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_requested">Delete from Arkivum archive requested</epp:phrase>
+
+
+<epp:phrase id="document_fieldopt_archive_status_archive_requested">Archiving Requested</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_archive_approved">Archiving Approved</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_archived">Archived</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_archive_failed">Archiving Failed</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_delete_requested">Deletion Requested</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_delete_approved">Deletion Approved</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_deleted">Deleted</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_delete_failed">Deletion Failed</epp:phrase>
+<epp:phrase id="document_fieldopt_archive_status_restored">Restored</epp:phrase>
+
+
+<epp:phrase id="arkivum_fieldopt_arkivum_status_archive_scheduled">File Scheduled for Archiving</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_ingest_in_progress">File Being Archived</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_ingested">File Copied to Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_replicated">File Replicated to Data Centre</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_escrow">File Securely Archived</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_archive_failed">File Archive Failed</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_scheduled">File Scheduled for Deletion</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_in_progress">File Deletion In Progress</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_deleted">File Deleted From Arkivum</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_delete_failed">File Deletion Failed</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_scheduled">File Scheduled for Restore to Arkivum Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_in_progress">Restore to Applpiance In Progress</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restored">File Restored to Arkivum Appliance</epp:phrase>
+<epp:phrase id="arkivum_fieldopt_arkivum_status_restore_failed">Restore Failed</epp:phrase>
+
+
+<!-- ***** Start of Plugin/Screen/EPrint/Document/AStor *****-->
+
+<epp:phrase id="Plugin/Screen/EPrint/Document/AStor:title">Manage archival storage</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/Document/AStor:help">Archive Request</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/Document/AStor:action_delete">Delete Archive</epp:phrase>
+
+<!-- ***** End of Plugin/Screen/EPrint/Document/AStor *****-->
+
+
+<!-- ***** End of Plugin/Screen/Workflow/AStorApprove *****-->
+
+<epp:phrase id="Plugin/Screen/Workflow/AStorApprove:title">Approve</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorApprove:confirm_archive">Are you sure you want to allow archiving to proceed for:<br />
+<div class="ep_block">
+<epc:pin name="eprint"></epc:pin>
+</div>
+<div class="ep_block">
+<epc:pin name="document"></epc:pin>
+</div>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorApprove:action:archive:title">Archive</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorApprove:action:delete:title">Delete</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorApprove:confirm_delete">Confirm Delete</epp:phrase>
+
+<!-- ***** End of Plugin/Screen/Workflow/AStorApprove *****-->
+
+
+<!-- ***** Start of Plugin/Screen/Workflow/AStorEPrintApprove *****-->
+
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:title">Manage Arkivum Archive</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:confirm_restore_request">
+  <div style="font-size: 11pt">Restore Request Approval</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) has requested the restore from the Arkivum data center to the local network of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>If the request is approved the restore will be scheduled and the requester will be notified when this has been done.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:confirm_delete_request">
+  <div style="font-size: 11pt">Remove Request Approval</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) has requested the removal of the following item from the Arkivum archive:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>If the request is approved the removal will be scheduled and the requester will be notified when this has been done.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:confirm_delete_arkivum">
+  <div style="font-size: 11pt">Remove Request Approval</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) has requested the removal of the following item from the Arkivum archive:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>This item has been securely archived. To remove the contents from Arkivum you will need to contact Arkivum to schedule removal.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:action:approve:title">Approve</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:restore_approved_history">
+  <div style="font-size: 11pt">Request Approved</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) has approved the request of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>the item has been scheduled for a restore from the Arkivum data center to the local network and the requester will be notified when this has been done.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/Workflow/AStorEPrintApprove:delete_approved_history">
+  <div style="font-size: 11pt">Delete Approved</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) has approved the request of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>the item has been scheduled for removal from the Arkivum archive.</p>
+</epp:phrase>
+
+<!-- ***** End of Plugin/Screen/Workflow/AStorEPrintApprove *****-->
+
+
+<!-- ***** Start of Plugin/Event/Arkivum *****-->
+
+<epp:phrase id="Plugin/Event/ArkivumV6:archive_successful">
+  <div style="font-size: 11pt">Archive Completed</div>
+  <p>The archive of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>has been completed and is secure. The local storage copy of your documents have been removed.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Event/ArkivumV6:restore_successful">
+  <div style="font-size: 11pt">Restore Completed</div>
+  <p>The restore of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>has been completed and is now available to download.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Event/ArkivumV6:restore_notification">EPrint Restore Notification</epp:phrase>
+<epp:phrase id="Plugin/Event/ArkivumV6:delete_successful">
+  <div style="font-size: 11pt">Removal Completed</div>
+  <p>The removal  of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p>from the Arkivum service has been completed.</p>
+</epp:phrase>
+
+<!-- ***** End of Plugin/Event/ArkivumV6 *****-->
+
+
+<!-- ***** Start of history_fieldopt_action *****-->
+
+<epp:phrase id="history_fieldopt_action_restore_request">Item Restore Request</epp:phrase>
+<epp:phrase id="history_fieldopt_action_remove_request">Item Remove Request</epp:phrase>
+
+<!-- ***** Start of history_fieldopt_action *****-->
+
+
+<!-- ***** Start of Plugin::Screen::EPrint::AStorRestore *****-->
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:title">Request Archive Restore</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:description">Request restore of file from the Arkivum service to the local network.</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:action:send:title">Restore Request</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:action:cancel:title">Cacnel</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:intro">The item you have requested is not available locally but has been archived. Do you wish to request a restore of this item to the local cache? :<br />
+  <div class="ep_block">
+  <epc:pin name="eprint"></epc:pin>
+  </div><br />
+  The estimated time to restore this item <epc:pin name="restoretime"></epc:pin>.
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:subject">Restore Request</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:mail">
+  <div style="font-size: 11pt">Restore Request</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) requests the restore of the following item:</p>
+  <p><epc:pin name="citation"/></p>
+  <p><epc:pin name="reason"/></p>
+  <p><epc:pin name="url">View the item details</epc:pin>.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:reason">No reason was given.</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorRestore:RequestOK">Restore request successful</epp:phrase>
+
+<!-- ***** End of Plugin::Screen::EPrint::AStorRestore *****-->
+
+
+<!-- ***** Start of Plugin::Screen::EPrint::AStorDelete *****-->
+
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:title">Request Archive Removal</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:description">Request removal of archive copies from Arkivum service.</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:action:send:title">Remove Request</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:action:cancel:title">Cancel</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:intro">Do you wish to request the removal of this item from the Arkivum Archive? :<br />
+  <div class="ep_block">
+  <epc:pin name="eprint"></epc:pin>
+  </div>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:subject">Remove Request</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:mail">
+  <div style="font-size: 11pt">Remove Request</div>
+  <p>User <epc:pin name="user"/> (Email: <epc:pin name="email"/>) requests the removal of the following item from the Arkivum archive:</p>
+  <p><epc:pin name="citation"/></p>
+  <p><epc:pin name="reason"/></p>
+  <p><epc:pin name="url">View the item details</epc:pin>.</p><br/>
+  <p>It should be noted that if any of the files attached to this item have already been securely archived then a manual request will need to be made to Arkivum to remove the item requested.</p>
+</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:reason">EPrint Arkivum Remove Request.</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/AStorDelete:RequestOK">Remove request successful</epp:phrase>
+
+<!-- ***** End of Plugin::Screen::EPrint::AStorDelete *****-->
+
+<!-- EPrint View Screen -->
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:title">Arkivum</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:no_status">Not Archived</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:status"><pin name="status"/></epp:phrase>
+
+<!-- Arkivum v6 -->
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:title">Arkivum</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:data:title">Arkivum transactions</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_report:title">Update ingest report</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_reingest:title">Attempt re-ingest</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_restore:title">Restore to local storage</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_request_deletion:title">Request deletion</epp:phrase>
+
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/render_report:title">Arkivum transaction for document: <epc:pin name="doc"/></epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/render_eprint_report:title">Arkivum transaction for EPrint: <epc:pin name="eprint"/></epp:phrase>
+<epp:phrase id="arkivum_fieldname_ingestid">Arkivum Ingest ID</epp:phrase>
+<epp:phrase id="arkivum_fieldname_eprintid">Eprint</epp:phrase>
+<epp:phrase id="arkivum_fieldname_eventid">Event ID</epp:phrase>
+<epp:phrase id="arkivum_fieldname_monitor_attempts">Monitor Attempts</epp:phrase>
+<epp:phrase id="arkivum_report_table_header">
+        <div class="ep_table_head ep_table_row">
+          <div class="ep_table_head ep_table_cell">Aggregation</div>
+          <div class="ep_table_head ep_table_cell">File</div>
+          <div class="ep_table_cell ep_table_colspan">
+            <div><div>
+                Status
+            </div></div>
+          </div>
+          <div class="ep_table_cell"></div>
+        </div>
+</epp:phrase>
+<epp:phrase id="arkivum_report_table_header_w_location">
+        <div class="ep_table_head ep_table_row">
+          <div class="ep_table_head ep_table_cell">Aggregation</div>
+          <div class="ep_table_head ep_table_cell">File</div>
+	  <div class="ep_table_head ep_table_cell">Location</div>
+          <div class="ep_table_cell ep_table_colspan">
+            <div><div>
+                Status
+            </div></div>
+          </div>
+          <div class="ep_table_cell"></div>
+
+        </div>
+</epp:phrase>
+
+<epp:phrase id="arkivum_aggregation_F">File</epp:phrase>
+<epp:phrase id="arkivum_aggregation_O">Object</epp:phrase>
+<epp:phrase id="arkivum_aggregation_C">Collection</epp:phrase>
+
+</epp:phrases>
