@@ -1,0 +1,63 @@
+#!/usr/bin/perl -w
+
+use FindBin;
+use lib "$FindBin::Bin/../../../perl_lib";
+
+######################################################################
+#
+#
+######################################################################
+
+use EPrints;
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+use POSIX;
+use Data::Dumper;
+
+my $repoid = $ARGV[0];
+my $eprintid = $ARGV[1];
+my $repo = new EPrints::Session( 1 , $repoid );
+if( !defined $repo )
+{
+    print STDERR "Failed to load repository: $repoid\n";
+    exit 1;
+}
+
+# get the total number of document and eprint astor records
+my $ds = $repo->dataset( "file" );
+
+my $search_exp = EPrints::Search->new(
+    session => $repo,
+    satisfy_all => 0,
+    dataset => $ds,
+);
+
+$search_exp->add_field(
+        fields => [ $ds->field( 'copies_pluginid' ) ],
+        value => 'Storage::ArkivumStorage',
+        match => "EX",
+);
+
+my $list = $search_exp->perform_search;
+my $count = 0;
+$list->map(sub{
+        my($session, $dataset, $file) = @_;
+
+	my @new_copies;
+	foreach my $copy (@{$file->value( "copies" )})
+	{
+		next if $copy->{"pluginid"} eq "Storage::ArkivumStorage"; 
+		push @new_copies, $copy;
+	}
+	
+    #print STDERR "*****File " . $file->id . "*****\n";
+    #print STDERR "Old copies...\n";
+    #print STDERR Dumper( $file->value( "copies" ) );
+    #print STDERR "New copies...\n";
+    #print STDERR Dumper( \@new_copies );
+
+	$file->set_value( "copies", \@new_copies );
+	$file->commit;
+
+});
