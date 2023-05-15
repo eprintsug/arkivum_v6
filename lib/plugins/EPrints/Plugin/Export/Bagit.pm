@@ -43,20 +43,14 @@ sub output_dataobj
     my $eprintid = $dataobj->id;
     my @results = $self->_log("Export", "start $eprintid", 1);
 
-    my $prefix = "";
-
-    if (defined $session->config( 'DPExport', 'transfer_prefix' ) ){
-        if ($session->config( 'DPExport', 'transfer_prefix' ) ne "") {
-            $prefix = $session->config( 'DPExport', 'transfer_prefix' )."-";
-        }
-    }
-
     # get the main, non-volatile documents
     my @docs = $dataobj->get_all_documents;
     my $numDocs = scalar @docs;
 
     # create directory to store exported files
-    my $target_path = $session->config( "arkivum", "path" ) . "/$prefix$eprintid";
+    #    my $target_path = $session->config( "arkivum", "path" ) . "/$prefix$eprintid";
+    my $target_path = $session->config( "arkivum", "path" ) . "/".$eprintid."_".$arkivumid."_BAG";
+
     print STDERR "Export Plugin Target Path: $target_path\n";	
 
     # for metadata only records, export these in a designated folder if set, skip if metadata_only_path not set
@@ -65,7 +59,7 @@ sub output_dataobj
         # if metadata_only_path not set, output warning and skip over and do not export anything out for this one
         if (defined $session->config( "arkivum", "metadata_only_path") && $session->config( "arkivum", "metadata_only_path") ne "" ){
             #export metadata only record into designated folder
-            $target_path = $session->config( "arkivum", "metadata_only_path" ) . "/$prefix$eprintid";
+            $target_path = $session->config( "arkivum", "metadata_only_path" ) . "/".$eprintid."_".$arkivumid."_BAG";
         }
         else {
             push @results, $self->_log("metadata_only_path not set", "Skipping", 2);
@@ -90,7 +84,8 @@ sub output_dataobj
         # create a directory for each doc
         my $local_path = $doc->local_path;
         $local_path =~ s#^$archive_root##;
-        my $doc_path= $data_path . $local_path;
+        #        my $doc_path= $data_path . $local_path;
+        my $doc_path= $data_path . "/documents/" . $doc->value("pos");
         $self->_make_dir( $doc_path );
 
         # and then create a file directory for each file
@@ -137,9 +132,11 @@ sub output_dataobj
 
     ## ep3.xml
     my $xml = $session->xml;
-        my $doc = $xml->parse_string( $dataobj->export( "XML" ) );
-    push @results, $self->_log("Write", "$data_path/EP3.xml", 1); 
-    EPrints::XML::write_xml_file( $doc, "$data_path/EP3.xml" );
+    my $doc = $xml->parse_string( $dataobj->export( "XML" ) );
+    my $metadata_path = "$data_path/metadata";
+    $self->_make_dir( $metadata_path );
+    push @results, $self->_log("Write", "$metadata_path/EP3.xml", 1); 
+    EPrints::XML::write_xml_file( $doc, "$metadata_path/EP3.xml" );
 
     ## revisions 
     # create a directory to copy the revisions to
@@ -221,11 +218,11 @@ sub output_dataobj
         }
     }
 
-    unshift @values, ("BagitCollection_".$eprintid."_".$arkivumid,"C","");
+    unshift @values, ("PCDM_Collection_".$eprintid."_".$arkivumid,"C","");
     $csv->print($fh,\@values);
 
     # Object line
-    my @object_values = ("BagitObject_".$eprintid."_".$arkivumid,"O","BagitCollection_".$eprintid."_".$arkivumid,"BagitObject_".$eprintid."_".$arkivumid);
+    my @object_values = ("PCDM_Object_".$eprintid."_".$arkivumid,"O","PCDM_Collection_".$eprintid."_".$arkivumid,"PCDM_Object_".$eprintid."_".$arkivumid);
     $csv->print($fh,\@object_values);
 
     # File lines
@@ -237,7 +234,7 @@ sub output_dataobj
 
         my $relativePath = File::Spec->abs2rel ($file_path,  $target_path."/data");
 
-        my @file_values = ($relativePath,"F","BagitObject_".$eprintid."_".$arkivumid,"");
+        my @file_values = ($relativePath,"F","PCDM_Object_".$eprintid."_".$arkivumid,"");
         print STDERR "Relative_path in export: $relativePath\n";
         next if($relativePath eq $dc_file);
         $csv->print($fh,\@file_values);

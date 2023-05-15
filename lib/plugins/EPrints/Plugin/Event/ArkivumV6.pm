@@ -24,64 +24,6 @@ sub new
     return $self;
 }
 
-
-sub ingest_document {
-  my( $self, $docid, $ark_t_id) = @_;
-
-  print STDERR "### In ingest_document\n";
-  # Get the repository
-  my $repository = $self->{repository};
-  # Check the document we need to copy
-  my $doc = new EPrints::DataObj::Document( $repository, $docid );
-  if ( not defined $doc )
-  {
-    $self->_log("Document: $docid not found");
-    return EPrints::Const::HTTP_NOT_FOUND;
-  }
-
-  # Get the specific ArkivumStorage plugin
-  my $arkivum_storage = $repository->plugin( "Storage::ArkivumV6" );
-  if ( not defined $arkivum_storage )
-  {
-    $self->_log("Could not get the Arkivum plugin for Document ".$doc->id."...");
-    return EPrints::Const::HTTP_NOT_FOUND;
-  }
-
-  #Get arkivum transaction dataobj and set the event_id
-  #  my $ark_t = EPrints::DataObj::Arkivum( $repository, $ark_t_id );
-  my $ark_t = $repository->get_dataset("arkivum")->get_object( $repository, $ark_t_id );
-
-  my $ingest_response = $arkivum_storage->ingest_document($doc);
-
-  if(!defined($ingest_response) || !$ingest_response){
-    $self->_log("Ingest Response not forthcoming, is an error avialable for us to report?");
-    $ark_t->set_value("arkivum_status", '{"local_message":"error"}');
-    $ark_t->commit;
-    return EPrints::Const::HTTP_INTERNAL_SERVER_ERROR;
-  }
-  
-  print STDERR "##### ".Dumper($ingest_response)."\n";
-  # If we are here then we should have had a successful _start_ of an ingest
-  # update the status of the arkivum_transaction and record the ingest_id
-  $ark_t->set_value("ingestid", $ingest_response->{ingestId});
-  $ark_t->set_value("arkivum_status",'{"local_message":"ingest_started"}');
-  $ark_t->commit;
-
-  # Then start the monitor event
-  my $monitor_event = EPrints::DataObj::EventQueue->create_unique( $repository, {
-    pluginid => "Event::ArkivumV6",
-    action => "ingest_report",
-    params => [$ingest_response->{ingestId}, $ark_t_id],
-  });
- 
-  # before we loose it lets record the event id in the arivum_transaction
-  $ark_t->set_value("eventid",$monitor_event->{data}->{eventqueueid});
-  $ark_t->commit;
-
-  # and complete this event
-  return EPrints::Const::HTTP_OK;
-}
-
 sub ingest_eprint {
   my( $self, $eprintid, $ark_t_id) = @_;
 
@@ -107,7 +49,7 @@ sub ingest_eprint {
   #Get arkivum transaction dataobj and set the event_id
   #  my $ark_t = EPrints::DataObj::Arkivum( $repository, $ark_t_id );
   my $ark_t = $repository->get_dataset("arkivum")->get_object( $repository, $ark_t_id );
-  my $ingest_response = $arkivum_storage->ingest_eprint($eprint);
+  my $ingest_response = $arkivum_storage->ingest_eprint($eprint, $ark_t_id);
 
   if(!defined($ingest_response) || !$ingest_response){
     $ark_t->set_value("arkivum_status", '{"local_message":"error"}');
@@ -178,7 +120,8 @@ sub ingest_report {
   my $success = 0;
   if( defined $monitor_response->{resultList} ){
     #We will quickly run through and estabish whether the steps have all suceeded or if we should remonitor
-    $success=1;
+    print STDERR "###### Checking if there is a resultList.... ".scalar @{$monitor_response->{resultList}};
+    $success=1 if scalar @{$monitor_response->{resultList}};
     for my $aggregation(@{$monitor_response->{resultList}}){
       for my $p_step(@{$aggregation->{processingSteps}}){
         $success = 0 if $p_step->{status} ne "SUCCESS";

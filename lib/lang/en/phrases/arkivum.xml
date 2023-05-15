@@ -244,8 +244,8 @@
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:title">Arkivum</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:data:title">Arkivum transactions</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_report:title">Update ingest report</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_reingest:title">Attempt re-ingest</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_restore:title">Restore to local storage</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_reingest:title">Re-ingest</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_restore_to_local:title">Restore files to local storage</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_request_deletion:title">Request deletion</epp:phrase>
 
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/render_report:title">Arkivum transaction for document: <epc:pin name="doc"/></epp:phrase>
@@ -284,5 +284,20 @@
 <epp:phrase id="arkivum_aggregation_F">File</epp:phrase>
 <epp:phrase id="arkivum_aggregation_O">Object</epp:phrase>
 <epp:phrase id="arkivum_aggregation_C">Collection</epp:phrase>
+
+<epp:phrase id="arkivum_process_METADATA_PROCESSING">Metadata Processing</epp:phrase>
+<epp:phrase id="arkivum_process_METADATA_EXTRACTION">Metadata Extraction</epp:phrase>
+<epp:phrase id="arkivum_process_INDEXING">Indexing</epp:phrase>
+<epp:phrase id="arkivum_process_INTEGRITY_CHECK">Integrity Check</epp:phrase>
+<epp:phrase id="arkivum_process_VIRUS_SCAN">Virus Scan</epp:phrase>
+<epp:phrase id="arkivum_process_ENCRYPTION">Encryption</epp:phrase>
+<epp:phrase id="arkivum_process_REPLICATION">Replication</epp:phrase>
+<epp:phrase id="arkivum_process_FIXITY">Fixity</epp:phrase>
+
+<epp:phrase id="arkivum:archive_mismatch"><br/><p>It looks like there has been a change to this record since it was last ingested into Arkivum. Perhaps you would like to re-ingest this item to Arkivum.</p><epc:pin name="reingest_button"/></epp:phrase>
+
+
+
+
 
 </epp:phrases>

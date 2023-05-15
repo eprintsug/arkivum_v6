@@ -6,6 +6,8 @@ use JSON qw(decode_json encode_json);
 
 use strict;
 use Data::Dumper;
+use Encode qw( encode_utf8 );
+use Digest::MD5 qw(md5_hex);
 
 # The new method can simply return the constructor of the super class (Dataset)
 sub new
@@ -23,19 +25,23 @@ sub get_system_field_info
         { name=>"docid", type=>"itemref", datasetid=>"document", required=>1, show_in_html=>0 },
         { name=>"eprintid", type=>"itemref", datasetid=>"eprint", required=>1, show_in_html=>0 },
         { name=>"userid", type=>"itemref", datasetid=>'user', required=>1, },
-        { name => "hash", type => "multipart",
-            fields => [
-                { sub_name => "filename", type => "id", },
-                { sub_name => "hash", type => "id", },
-            ],
-            multiple => 1,
-        },
+        #        { name => "hash", type => "multipart",
+        #    fields => [
+        #        { sub_name => "filename", type => "id", },
+        #        { sub_name => "hash", type => "id", },
+        #    ],
+        #    multiple => 1,
+        #},
         { name=>"access_date", type=>"time", required=>0, },
         { name => "arkivum_status", type => 'longtext',	render_value=>"EPrints::DataObj::Arkivum::render_arkivum_status_summary" },
         # can't use item ref because that expectes an int and eventqueueid is a hash
         { name => "eventid", type => "id" },
         { name => "ingestid", type => "id" },
         { name => "monitor_attempts", type => "int" },
+        { name => "archive_fingerprint", type => "id" },
+        { name => "eprint_revision", type => "id" },
+	      { name=>"timestamp", type=>"timestamp", required=>0, import=>0,
+		      render_res=>"minute", render_style=>"short", can_clone=>0, volatile=>1 },
     );
 }
 
@@ -78,6 +84,7 @@ sub search_by_eprintid
             value => $eprintid,
             match => "EX",
         }],
+        custom_order => "-arkivumid",
     );
 }
 
@@ -85,14 +92,18 @@ sub latest_by_eprintid
 {
     my( $class, $session, $eprintid ) = @_;
 
-    return $session->dataset( $class->get_dataset_id )->search(
+    my $list = $session->dataset( $class->get_dataset_id )->search(
         filters => [{
             meta_fields => [qw( eprintid )],
             value => $eprintid,
             match => "EX",
         }],
-        order => "-arkivumid",
-    )->item(0);
+        custom_order => "-arkivumid",
+    );
+    print STDERR "##### This is the first one in the return list ".$list->item(0)->id."\n";
+    print STDERR "##### This is the last one in the return list ".$list->item($list->count-1)->id."\n";
+
+    return $list->item(0);
 }
 
 sub parse_arkivum_status
@@ -113,36 +124,45 @@ sub stepwise_arkivum_status {
         for my $aggregation(@{$report->{resultList}}){
             for my $p_step(@{$aggregation->{processingSteps}}){
                 $stepwise_arkivum_status->{$p_step->{name}} = [] unless defined $stepwise_arkivum_status->{$p_step->{name}};
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "SUCCESS" unless defined $stepwise_arkivum_status->{"overall"}->{$p_step->{name}};
                 push @{$stepwise_arkivum_status->{$p_step->{name}}} , { aggregationType=>$aggregation->{aggregationType}, 
                     relativePath=>$aggregation->{relativePath},
                     status=>$p_step->{status}, 
                     name=>$p_step->{name},
                     id=>$aggregation->{id},
                 };
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "PENDING" if $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} ne "FAILED" && $p_step->{status} eq "PENDING";
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "FAILED" if $p_step->{status} eq "FAILED";
             }
 
             for my $p_step(@{$aggregation->{contentEntityProcessingState}->{processingSteps}}){
                 $stepwise_arkivum_status->{$p_step->{name}} = [] unless defined $stepwise_arkivum_status->{$p_step->{name}};
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "SUCCESS" unless defined $stepwise_arkivum_status->{"overall"}->{$p_step->{name}};
                 push @{$stepwise_arkivum_status->{$p_step->{name}}} , { aggregationType=>$aggregation->{aggregationType}, 
                     relativePath=>$aggregation->{relativePath},
                     status=>$p_step->{status}, 
                     name=>$p_step->{name},
                     id=>$aggregation->{id},
                 };
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "PENDING" if $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} ne "FAILED" && $p_step->{status} eq "PENDING";
+                $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "FAILED" if $p_step->{status} eq "FAILED";
             }
 
             while(my($location,$p_steps) = each(%{$aggregation->{contentEntityProcessingState}->{locationProcessingSteps}})){
                 for my $p_step (@{$p_steps}){
                     $p_step->{name} = "REPLICATION" if($p_step->{name} eq "REPLICATION_COPY");
                     $stepwise_arkivum_status->{$p_step->{name}} = [] unless defined $stepwise_arkivum_status->{$p_step->{name}};
+                    $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "SUCCESS" unless defined $stepwise_arkivum_status->{"overall"}->{$p_step->{name}};
                     push @{$stepwise_arkivum_status->{$p_step->{name}}} , { aggregationType=>$aggregation->{aggregationType},
                         relativePath=>$aggregation->{relativePath},
                         status=>$p_step->{status}, 
                         location=>$location,
                         name=>$p_step->{name},
                         id=>$aggregation->{id},
-                    };
-                }
+                    }; 
+                    $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "PENDING" if $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} ne "FAILED" && $p_step->{status} eq "PENDING";
+                    $stepwise_arkivum_status->{"overall"}->{$p_step->{name}} = "FAILED" if $p_step->{status} eq "FAILED";
+               }
             }
         }
     }else{
@@ -260,3 +280,45 @@ sub render_arkivum_status_summary
 
     return $div;
 }
+
+sub take_fingerprint {
+
+  my ( $self, $eprint ) = @_;
+  
+  my $repo = $eprint->repository;
+  my $sm = $repo->get_conf("arkivum","significant_metadata", "eprint");
+  my %data;
+
+  for my $field(@{$sm}){
+ 
+    if( ref( $field ) eq "CODE" ) {
+    # TODO do somethign clever with CODE
+    }else{
+      $data{$field} = $eprint->value($field);
+    }
+  }
+ 
+  return $self->serialise_and_hash_metadata(\%data);
+
+}
+
+sub serialise_and_hash_metadata {
+
+    my( $self, $data ) = @_;
+
+    my $serialised = "";
+    foreach my $key ( keys %{$data} )
+    {
+        if( ref( $data->{$key} ) =~ /^XML::LibXML/ )
+        {
+            $serialised .= EPrints::Utils::tree_to_utf8( $data->{$key}, undef, undef, undef, 1 );
+        }
+        else
+        {
+            $serialised .= $data->{$key};
+        }
+    }
+    return md5_hex( encode_utf8( $serialised ) );
+};
+
+

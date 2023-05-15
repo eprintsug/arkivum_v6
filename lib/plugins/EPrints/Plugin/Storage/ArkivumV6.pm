@@ -27,38 +27,11 @@ sub new {
   return $self;
 }
 
-sub ingest_document {
-  my ($self,$doc) = @_;
-
-  # First step is to put the file into the ingest bucket (as specified in config)
-  my $ingest_path = $self->_bucket_put_doc($doc);
-  my $metadata_path = $self->_bucket_put_metadata($doc->parent);
-
-  print STDERR "HAVE INGEST PATH: $ingest_path\n";
-  print STDERR "HAVE METADATA PATH: $metadata_path\n";
-  # Get the metadata path. If we are ingesting a document we will need to get the associated metadata for that doc
-  # probably that will be the doc-<parnet->dc_xml
-  # my $metadata_path = $self->_get_metadata_path($doc);
-
-
-  # Then we call the ingest endpoint to start the actual ingest
-  my $url = URI->new('/ingest');
-  my $folder_path = $self->_documents_path."/".$doc->parent->value('dir');
-
-  print STDERR "HAVE FOLDER PATH: $folder_path\n";
-
-  #  $url->query_form({ingestPath=>$ingest_path, folderPath=> $folder_path, datapool=>$self->param("datapool"), metadataPath=>$metadata_path});
-  $url->query_form({ingestPath=>$ingest_path, datapool=>$self->param("datapool"), metadataPath=>$metadata_path});
-
-
-  return $self->_arkivum_post_request($url, undef);
-}
-
 sub ingest_eprint {
-  my ($self,$eprint) = @_;
+  my ($self, $eprint, $ark_t_id) = @_;
 
   # First step is to put the file into the ingest bucket (as specified in config)
-  my ($bucket_path,$metadata_path) = $self->_bucket_put_eprint($eprint);
+  my ($bucket_path,$metadata_path) = $self->_bucket_put_eprint($eprint, $ark_t_id);
   my $bucket_metadata_path = $self->_bucket_put_metadata($metadata_path);
 
   print STDERR "HAVE BUCKET PATH: $bucket_path\n";
@@ -67,7 +40,7 @@ sub ingest_eprint {
   # Then we call the ingest endpoint to start the actual ingest
   my $url = URI->new('/ingest');
   #  my $folder_path = $self->_datapool."/".$eprint->value('dir');
-  my $folder_path = $self->_datapool."/".$self->_unique_folder_name($eprint);
+  my $folder_path = $self->_datapool."/".$self->_unique_folder_name($eprint, $ark_t_id);
 
   print STDERR "HAVE FOLDER PATH: $folder_path\n";
 
@@ -245,9 +218,9 @@ sub _datapool {
 
 sub _unique_folder_name {
 
-    my( $self, $eprint) = @_;
+    my( $self, $eprint, $ark_t_id) = @_;
 
-    return $eprint->id."_".EPrints::DataObj::Arkivum->latest_by_eprintid($eprint->{session},$eprint->id)->id;
+    return $eprint->id."_".$ark_t_id;
 }
 
 sub _documents_path {
@@ -337,45 +310,34 @@ sub _get_ingest_bucket {
    
 }
 
-sub _bucket_put_doc {
-
-  my ($self, $doc) = @_;
-
-  my $bucket = $self->_get_ingest_bucket;
-
-  # TODO this will only get one file per document !!
-  my $file_obj = $doc->stored_file( $doc->get_main );
-  my $file_path = $file_obj->get_local_copy();
-  # Deal with EPrints vagueness
-  if(ref($file_path) eq "File::Temp"){
-    $file_path = $file_path->filename;
-  }
-  # Turn the local file path into an address we can use in bucket (and beyond)
-  my $ingest_path=$self->_file_path_to_arkivum_path($file_path);
-  
-  my $response = $bucket->add_key_filename($ingest_path,$file_path,{content_type=>$file_obj->value('mime_type')});
-  return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
-  return $ingest_path;
-
-}
-
 sub _bucket_put_eprint {
 
-  my ($self, $eprint) = @_;
+  my ($self, $eprint, $ark_t_id) = @_;
 
   my $bucket = $self->_get_ingest_bucket;
 
-  my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>EPrints::DataObj::Arkivum->latest_by_eprintid($eprint->{session},$eprint->id)->id);
+  my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>$ark_t_id);
   # TODO replcae this with a perl library as long as it works just like this stuff 
   my $bagit_zip_path = $bagit_path.".tar.gz";
-  my $bucket_key_path = $bagit_zip_path;
-  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
-  $bucket_key_path =~ s#^$arkivum_path##;
+  #  my $bucket_key_path = $bagit_zip_path;
+  #  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
+  #  $bucket_key_path =~ s#^$arkivum_path##;
 
   # This exec will leave a . (dot) in the path
   #my $output = `/bin/tar -zcf $bagit_zip_path -C $bagit_path *`;
   # This one will not insert a . (dot)
   my $output = `find $bagit_path -printf "%P\n" -type f -o -type l -o -type d | tar -czf $bagit_zip_path --no-recursion -C $bagit_path -T -`;
+
+  return $self->_handle_bucket_error("Bagit tar file does not exist") unless(-e $bagit_zip_path);
+  use File::Copy;
+  
+  # Move the compressed bagit file to a cool sounding filename
+  my $bagit_cool_name = substr($bagit_path,0,-4);
+  move($bagit_zip_path, $bagit_cool_name);
+
+  my $bucket_key_path = $bagit_cool_name;
+  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
+  $bucket_key_path =~ s#^$arkivum_path##;
 
   # Turn the local file path into an address we can use in bucket (and beyond)
   # my $ingest_path=$self->_file_path_to_arkivum_path($bagit_path);
@@ -383,8 +345,10 @@ sub _bucket_put_eprint {
   my $ingest_path=$self->param( "datapool" ).$bucket_key_path;
   #  my $response = $bucket->add_key_filename($ingest_path,$bagit_zip_path,{content_type=>'application/gzip'});
   my $object = $bucket->object(key=>$ingest_path, content_type=>'application/gzip');
-  my $response = $object->put_filename($bagit_zip_path);
+  my $response = $object->put_filename($bagit_cool_name);
+
   return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
+
   return ($ingest_path,$metadata_path);
 }
 

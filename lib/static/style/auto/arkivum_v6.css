@@ -9,8 +9,18 @@
     height: 10px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.25);
-    box-shadow: #000 0 -1px 6px 1px;
+/*    box-shadow: #000 0 -1px 6px 1px;*/
+    box-shadow: #000 0 -1px 6px 1px, inset #460 0 -1px 8px, #80FF00 0 3px 11px;
+
 }
+.led-tab {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    vertical-align: middle;
+    box-shadow: #000 0 -1px 5px 1px, inset #460 0 -1px 6px, #80FF00 0 3px 8px;
+}
+
 .led_FAILED {
     background-color: #F00;
     box-shadow: #000 0 -1px 6px 1px, inset #600 0 -1px 8px, #F00 0 3px 11px;
@@ -37,7 +47,6 @@
 
 .led_SUCCESS {
     background-color: #80FF00;
-    box-shadow: #000 0 -1px 6px 1px, inset #460 0 -1px 8px, #80FF00 0 3px 11px;
 }
 
 .led-blue {
@@ -63,8 +72,27 @@
   padding: 5px;
 }
 
-.arkivum_actions {
-  margin: 10px;
+.ep_arkivum_view_panel table {
+  min-height: 270px;
+}
+.ep_arkivum_view_panel table td:first-child{
+  vertical-align: top;
+}
+.ep_arkivum_view_panel .nav > li > a {
+  padding: 5px 8px;
+}
+
+.ep_arkivum_view_panel > h3 {
+ display: inline-block;
+ width: 37%;
+}
+
+.ep_arkivum_view_panel > .arkivum_actions {
+ display: inline-block;
+ width: 60%;
+ text-align: right;
+ margin: 10px;
+
 }
 
 .arkivum_report.ep_table .ep_table_cell.ep_table_colspan,
@@ -88,12 +116,27 @@
     top: 5px;
 }
 
-#ep_arkivum_view_panels > div {
+/* tthis bit is a bit confusing at the moment (Sorry) */
+/*only show the tabs*/
+div.ep_arkivum_view_panels {
  display: none;
 }
 
-#ep_arkivum_view_panels > div:first-child {
+div.ep_arkivum_view_panels.ep_arkivum_view_show_report_0 {
  display: block;
+}
+
+.ep_arkivum_view_panels > div {
+ display: none;
+}
+
+.ep_arkivum_view_panels > div:first-child {
+ display: block;
+}
+
+li.ep_arkivum_view_tab {
+   font-size: smaller;
+   white-space: nowrap;
 }
 
 /*******************************/
