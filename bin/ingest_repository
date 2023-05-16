@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+
+use FindBin;
+use lib "$FindBin::Bin/../../../perl_lib";
+
+######################################################################
+#
+#
+######################################################################
+
+use EPrints;
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+use POSIX;
+use Data::Dumper;
+
+my $repoid = $ARGV[0];
+my $eprintid = $ARGV[1];
+my $repo = new EPrints::Session( 1 , $repoid );
+if( !defined $repo )
+{
+    print STDERR "Failed to load repository: $repoid\n";
+    exit 1;
+}
+
+# get the total number of document and eprint astor records
+my $ds = $repo->dataset( "archive" );
+
+my $list;
+
+if( defined $eprintid )
+{
+    my $search_exp = EPrints::Search->new(
+        session => $repo,
+        satisfy_all => 0,
+        dataset => $ds,
+    );
+
+    $search_exp->add_field(
+        fields => [ $ds->field( 'eprintid' ) ],
+        value => $eprintid,
+        match => "EQ",
+    );
+    $list = $search_exp->perform_search;
+}
+else
+{
+    $list = $ds->search;
+}
+
+$list->map(sub{
+    my($session, $dataset, $ark_t) = @_;
+
+    $ark_t->remove;
+});
