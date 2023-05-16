@@ -54,7 +54,24 @@ $c->{arkivum}->{criteria} = {
 };
 
 $c->{arkivum}->{significant_metadata} = {
-    eprint => ['title']
+    eprint => ['title',
+      sub { 
+        my ($repo,$eprint) = @_;
+        # Very poor persons blockchain :)
+        my $files_hash_str="";
+        foreach my $doc ($eprint->get_all_documents){
+	print STDERR "docid: " . $doc->id . "\n";
+	print STDERR "doc main: " . $doc->value( "main" ) . "\n";
+          foreach my $file(@{$doc->value("files")}){
+	    print STDERR "fileid: " . $file->id . "\n";
+	    print STDERR "filename: " .$file->value( "filename" );
+	    print STDERR "file hash: " . $file->value( "hash" );
+            $files_hash_str .= $file->value("hash");
+          }
+        }
+        return $files_hash_str;
+      }
+    ]
 };
 # CACHING 
 $c->{arkivum}->{processes} = [qw/

@@ -40,7 +40,9 @@ sub ingest_eprint {
   # Then we call the ingest endpoint to start the actual ingest
   my $url = URI->new('/ingest');
   #  my $folder_path = $self->_datapool."/".$eprint->value('dir');
-  my $folder_path = $self->_datapool."/".$self->_unique_folder_name($eprint, $ark_t_id);
+  # my $folder_path = $self->_datapool."/".$self->_unique_folder_name($eprint, $ark_t_id);
+  my $folder_path = $self->_unique_folder_name($eprint, $ark_t_id);
+
 
   print STDERR "HAVE FOLDER PATH: $folder_path\n";
 

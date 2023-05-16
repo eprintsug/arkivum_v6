@@ -105,7 +105,6 @@ sub ingest_report {
   #  my $ark_t = EPrints::DataObj::Arkivum($repository, $ark_t_id);
   my $ark_t = $repository->get_dataset("arkivum")->get_object( $repository, $ark_t_id );
 
-
   my $monitor_response = $arkivum_storage->monitor("ingest", $ingestid);
 
   if(!defined($monitor_response) || !$monitor_response){
@@ -166,7 +165,47 @@ sub ingest_report {
   # Actual success so remove the event on OK
   $event->set_value( "cleanup", "TRUE" );
   $event->commit;
+
+  # Now we are satisfied that there is a successful ingest of this eprint we will make a "copy" of all the files in the docs' file objects have an Arkivum v6 copy
+  $self->_make_copy($ark_t);
+
   return EPrints::Const::HTTP_OK;
+
+}
+
+sub _make_copy {
+
+  my ($self, $ark_t) = @_;
+
+  my $repo = $self->{repository};
+  my $storage = $repo->plugin("Storage::ArkivumV6");
+  
+  return undef if ! defined $storage;
+
+  my $eprint = $repo->dataset("eprint")->dataobj($ark_t->value("eprintid"));
+
+  foreach my $doc ($eprint->get_all_documents){
+
+	  # Copy all files attached to the document
+	  foreach my $file (@{$doc->get_value( "files" )})
+	  {
+		    # Get/construct URI for this file so we can find it within the Arkivum API
+		    my $uri = $self->_get_arkivum_uri($doc, $file, $ark_t->id, $storage->param("api_host"), $storage->param("datapool"));
+
+		    # Create a file->copy with the Storage::ArkivunV6 pluginid now we know that this file is safely in Arkivum
+        $file->add_plugin_copy( $storage, $uri );
+        $file->commit();
+	  }
+  }
+}
+
+sub _get_arkivum_uri {
+
+  my ($self, $doc, $file, $ark_t_id, $arkivum_host, $datapool) = @_;
+
+  my $arkivum_uri = $arkivum_host."/a6/files/".$datapool."/".$doc->value("eprintid")."_".$ark_t_id."/documents/".$doc->value("pos")."/".$file->value("filename");
+
+  return $arkivum_uri;
 
 }
 
