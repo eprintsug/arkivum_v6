@@ -6,7 +6,7 @@ use LWP::UserAgent;
 #use Amazon::S3;
 use Net::Amazon::S3::Client;
 
-use LWP::Authen::OAuth2;
+#use LWP::Authen::OAuth2;
 use Data::Dumper;
 
 @ISA = ("EPrints::Plugin::Storage");

@@ -100,8 +100,6 @@ sub latest_by_eprintid
         }],
         custom_order => "-arkivumid",
     );
-    print STDERR "##### This is the first one in the return list ".$list->item(0)->id."\n";
-    print STDERR "##### This is the last one in the return list ".$list->item($list->count-1)->id."\n";
 
     return $list->item(0);
 }

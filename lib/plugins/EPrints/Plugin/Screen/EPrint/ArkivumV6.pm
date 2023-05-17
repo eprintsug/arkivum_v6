@@ -11,7 +11,7 @@ sub new
   
   my $self = $class->SUPER::new(%params);
 
-  $self->{actions} = [qw/ report reingest restore_to_local request_deletion/];
+  $self->{actions} = [qw/ reingest /];
 
   $self->{appears} = [
     {
@@ -29,27 +29,8 @@ sub new
 sub can_be_viewed
 {
   my( $self ) = @_;
-  #    my $repo = $self->{repository};
+  # my $repo = $self->{repository};
   return $self->allow( "eprint/arkivum" );
-}
-# Overriding allow_action so we can pass through params
-sub allow_action
-{
-	my( $self, $action_id, %params ) = @_;
-	my $ok = 0;
-	foreach my $an_action ( @{$self->{actions}} )
-	{
-		if( $an_action eq $action_id )
-		{
-			$ok = 1;
-			last;
-		}
-	}
-
-	return( 0 ) if( !$ok );
-
-	my $fn = "allow_".$action_id;
-	return $self->$fn(%params);
 }
 
 sub render
@@ -62,25 +43,24 @@ sub render
   my $eprint = $self->{processor}->{eprint};
 
   $page->appendChild( $repo->xml->create_element( "br" ) );
- 
+
+  # header stuff 
   $page->appendChild(my $h2 = $repo->make_element("h2") );
   $h2->appendChild($repo->make_text("Arkivum transactions for "));
   $h2->appendChild($eprint->render_value("title"));
 
-
+  # headline action
   my $arkivum_transactions = EPrints::DataObj::Arkivum->search_by_eprintid( $repo, $eprint->id );
-  my $ind=0;
+
+  if( $self->action_allowed( ) )
+  {
+      $page->appendChild( $repo->render_message( "warning", $repo->html_phrase( "arkivum:archive_mismatch", reingest_button=>$form ) ) );
+  }
+
+
+  my $ind = 0;
   $arkivum_transactions->map(sub {
     my ($session, undef, $ark_t) = @_;
-
-    if($self->allow_reingest(arkivumid=>$ark_t->id, is_not_latest=>$ind)){ #we only expect this when $ind == 0 and there has been a change in the eprint since last archive.
-      my $form = $self->render_form( "get" ) ;
-      $form->appendChild( $repo->render_hidden_field( "class", $ark_t->get_dataset_id ) );
-      $form->appendChild( $repo->render_hidden_field( "arkivumid", $ark_t->id ) );
-      $form->appendChild( $repo->render_hidden_field( "is_not_latest", $ind ) );
-      $form->appendChild( $repo->render_action_buttons( reingest=>$repo->phrase( "Plugin/Screen/EPrint/ArkivumV6/action_reingest:title" ) ) );
-      $page->appendChild( $repo->render_message( "warning", $repo->html_phrase( "arkivum:archive_mismatch", reingest_button=>$form ) ) );
-    }
     $page->appendChild( $self->render_arkivum_transaction($ark_t, $ind) );
     $ind++;
   });
@@ -112,9 +92,9 @@ sub render_arkivum_transaction
     arkivumid => [$ark_t->id,"STRING"],
     eprint_revision => [$ark_t->value("eprint_revision"),"STRING"],
     timestamp => [$ark_t->value("timestamp"),"STRING"],
-    arkivum_actions=>[$self->render_arkivum_actions($ark_t,$ind),"XHTML"],
+    arkivum_actions=>[$self->render_arkivum_actions($eprint, $ark_t, $ind),"XHTML"],
     transaction_index => [$ind,"INTEGER"],
-   ));
+  ));
 
   return $frag;
 }
@@ -230,27 +210,15 @@ sub allow_request_deletion
 
 sub render_arkivum_actions
 {
-  my( $self, $ark_t, $is_not_latest ) = @_;
+  my( $self, $eprint, $ark_t, $is_not_latest ) = @_;
 
   my $repo = $self->{repository};
 
   my $arkivum_actions = $repo->make_element( "div", class=> "arkivum_actions" );
-
-  my $form = $arkivum_actions->appendChild( $self->render_form( "get" ) );
-  $form->appendChild( $repo->render_hidden_field( "class", $ark_t->get_dataset_id ) );
-  $form->appendChild( $repo->render_hidden_field( "arkivumid", $ark_t->id ) );
-
-  my $order =[];
-  my %buttons = {};
-	foreach my $action ( @{$self->{actions}} )
-	{
-    #reingest s a special case and not really associated to a transaction so we won't include in the actions 
-    next if $action eq "reingest";
-		next if !$self->allow_action( $action, arkivumid=>$ark_t->id, is_not_latest=>$is_not_latest);
-		push @{$order}, $action;
-		$buttons{$action} = $repo->phrase( "Plugin/Screen/EPrint/ArkivumV6/action_$action:title" );
-	}
-  $form->appendChild( $repo->render_action_buttons( _order => $order, %buttons ) );
+  $arkivum_actions->appendChild( $self->render_action_list_bar( "arkivum_transaction_actions", {
+        eprintid => $eprint->id,
+        arkivumid => $ark_t->id,
+  } ) ); 
 
   return $arkivum_actions;
 }
