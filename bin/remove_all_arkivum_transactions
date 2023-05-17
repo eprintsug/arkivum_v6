@@ -24,39 +24,12 @@ if( !defined $repo )
 }
 
 # get the total number of document and eprint astor records
-my $ds = $repo->dataset( "file" );
+my $ds = $repo->dataset( "arkivum" );
 
-my $search_exp = EPrints::Search->new(
-    session => $repo,
-    satisfy_all => 0,
-    dataset => $ds,
-);
+my $list = $ds->search;
 
-$search_exp->add_field(
-        fields => [ $ds->field( 'copies_pluginid' ) ],
-        value => 'Storage::ArkivumStorage',
-        match => "EX",
-);
-
-my $list = $search_exp->perform_search;
-my $count = 0;
 $list->map(sub{
-        my($session, $dataset, $file) = @_;
+    my($session, $dataset, $ark_t) = @_;
 
-	my @new_copies;
-	foreach my $copy (@{$file->value( "copies" )})
-	{
-		next if $copy->{"pluginid"} eq "Storage::ArkivumStorage"; 
-		push @new_copies, $copy;
-	}
-	
-    #print STDERR "*****File " . $file->id . "*****\n";
-    #print STDERR "Old copies...\n";
-    #print STDERR Dumper( $file->value( "copies" ) );
-    #print STDERR "New copies...\n";
-    #print STDERR Dumper( \@new_copies );
-
-	$file->set_value( "copies", \@new_copies );
-	$file->commit;
-
+    $ark_t->remove;
 });

@@ -283,20 +283,27 @@ sub take_fingerprint {
 
   my ( $self, $eprint ) = @_;
   
+
   my $repo = $eprint->repository;
-  my $sm = $repo->get_conf("arkivum","significant_metadata", "eprint");
+  my %sm = %{$repo->get_conf("arkivum","significant_metadata", "eprint")};
   my %data;
 
-  for my $field(@{$sm}){
- 
-    if( ref( $field ) eq "CODE" ) {
-    # TODO do somethign clever with CODE
-      $data{$field} = &{$field}( $repo, $eprint );
+  for my $key(keys %sm){
+    if( ref( $sm{$key} ) eq "CODE" ) {
+      $data{$key} = &{$sm{$key}}( $repo, $eprint );
     }else{
-      $data{$field} = $eprint->value($field);
+      $data{$key} = $eprint->value($key);
     }
   }
  
+  use Data::Dumper;
+  print STDERR Dumper(%data)."\n";
+
+  print STDERR "###### Check the serialize_and_hash output once\n";
+  print STDERR $self->serialise_and_hash_metadata(\%data);
+  
+  print STDERR "###### and then again....\n";
+
   return $self->serialise_and_hash_metadata(\%data);
 
 }
@@ -306,7 +313,7 @@ sub serialise_and_hash_metadata {
     my( $self, $data ) = @_;
 
     my $serialised = "";
-    foreach my $key ( keys %{$data} )
+    foreach my $key ( sort keys %{$data} )
     {
         if( ref( $data->{$key} ) =~ /^XML::LibXML/ )
         {

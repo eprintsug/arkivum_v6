@@ -34,7 +34,7 @@ my $search_exp = EPrints::Search->new(
 
 $search_exp->add_field(
         fields => [ $ds->field( 'copies_pluginid' ) ],
-        value => 'Storage::ArkivumStorage',
+        value => 'Storage::ArkivumV6',
         match => "EX",
 );
 
@@ -46,7 +46,7 @@ $list->map(sub{
 	my @new_copies;
 	foreach my $copy (@{$file->value( "copies" )})
 	{
-		next if $copy->{"pluginid"} eq "Storage::ArkivumStorage"; 
+		next if $copy->{"pluginid"} eq "Storage::ArkivumV6"; 
 		push @new_copies, $copy;
 	}
 	

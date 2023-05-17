@@ -50,7 +50,6 @@ else
 }
 
 $list->map(sub{
-    my($session, $dataset, $ark_t) = @_;
-
-    $ark_t->remove;
+    my($session, $dataset, $eprint) = @_;
+    $session->call(['arkivum','create_archive_event'],$eprint,1);
 });
