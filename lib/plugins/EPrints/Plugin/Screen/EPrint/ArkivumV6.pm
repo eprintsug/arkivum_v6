@@ -276,8 +276,8 @@ sub action_report
     params => [$ark_t->value("ingestid"), $ark_t->id],
   });
  
-  $ark_t->set_value("eventid",$monitor_event->{data}->{eventqueueid});
-  $ark_t->commit;
+  #$ark_t->set_value("eventid",$monitor_event->{data}->{eventqueueid});
+  #$ark_t->commit;
 
   $self->add_result_message( "report" );
 } 

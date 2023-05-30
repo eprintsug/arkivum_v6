@@ -17,6 +17,7 @@ sub new
     $self->{disable} = 0; # always enabled, even in lib/plugins
 
     $self->{package_name} = "ArkivumV6";
+    $self->{timeout} = 3600;
 
     # Enable debug logging
     $self->_set_debug(1);
@@ -168,8 +169,26 @@ sub ingest_report {
 
   # Now we are satisfied that there is a successful ingest of this eprint we will make a "copy" of all the files in the docs' file objects have an Arkivum v6 copy
   $self->_make_copy($ark_t);
+  $self->_remove_bucket_copy($ark_t);
 
   return EPrints::Const::HTTP_OK;
+
+}
+
+sub _remove_bucket_copy {
+
+  my ($self, $ark_t) = @_;
+
+  my $repo = $self->{repository};
+  my $storage = $repo->plugin("Storage::ArkivumV6");
+  
+  return undef if ! defined $storage;
+
+  my $bucket_key = $storage->param("datapool")."/".$ark_t->value("eprintid")."_".$ark_t->id;
+  my $bucket_md_key = $bucket_key."_BAG/ark-file-meta.csv";
+
+  $storage->_bucket_delete_request($bucket_key);
+  $storage->_bucket_delete_request($bucket_md_key);
 
 }
 

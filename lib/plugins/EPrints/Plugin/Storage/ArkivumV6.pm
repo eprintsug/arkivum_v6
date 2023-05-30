@@ -6,6 +6,10 @@ use LWP::UserAgent;
 #use Amazon::S3;
 use Net::Amazon::S3::Client;
 
+use Archive::Tar::Wrapper;
+use File::Find;
+use File::Spec::Functions qw(abs2rel);
+
 use LWP::Authen::OAuth2;
 use Data::Dumper;
 
@@ -30,19 +34,21 @@ sub new {
 sub ingest_eprint {
   my ($self, $eprint, $ark_t_id) = @_;
 
-  # First step is to put the file into the ingest bucket (as specified in config)
-  my ($bucket_path,$metadata_path) = $self->_bucket_put_eprint($eprint, $ark_t_id);
+  # 1) Create a bag for this eprint
+  my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>$ark_t_id);
+
+  # 2) Post the metadata to the bucket
   my $bucket_metadata_path = $self->_bucket_put_metadata($metadata_path);
 
-  print STDERR "HAVE BUCKET PATH: $bucket_path\n";
-  print STDERR "HAVE METADATA PATH: $bucket_metadata_path\n";
+  # 3) Tar up the bag and remove the the bag dir
+  my $bagit_zip_path = $self->_tar_bag( $bagit_path );
+
+  # 4) Post tar file to the bucket
+  my $bucket_path = $self->_bucket_put_eprint($bagit_zip_path);
 
   # Then we call the ingest endpoint to start the actual ingest
   my $url = URI->new('/ingest');
-  #  my $folder_path = $self->_datapool."/".$eprint->value('dir');
-  # my $folder_path = $self->_datapool."/".$self->_unique_folder_name($eprint, $ark_t_id);
   my $folder_path = $self->_unique_folder_name($eprint, $ark_t_id);
-
 
   print STDERR "HAVE FOLDER PATH: $folder_path\n";
 
@@ -312,46 +318,117 @@ sub _get_ingest_bucket {
    
 }
 
+sub _tar_bag {
+
+  my ($self, $bagit_path ) = @_;
+
+  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
+  my $bagit_zip_path = $bagit_path.".tar.gz";
+
+  my $tar = Archive::Tar::Wrapper->new(tmpdir => $arkivum_path);
+  find(
+    sub {
+        return unless -f;  # Add only regular files
+        my $file_path = $File::Find::name;
+        my $rel_path = abs2rel($file_path, $bagit_path);
+	print STDERR "Adding $rel_path from $file_path\n";
+  	$tar->add($rel_path, $file_path);
+    },
+    $bagit_path
+  );
+
+  print STDERR "And write to $bagit_zip_path\n";
+  $tar->write( $bagit_zip_path );
+
+  # tidy away the bag now we've tar'd it AND put the metadata from it in the bucket
+  my $tidy = `rm -rf $bagit_path`;
+  
+  # amd tidy away the dir used by Tar::Wrapper to make the tar
+  $tar = undef;
+ 
+  # Move the compressed bagit file to a cool sounding filename
+  use File::Copy;
+  my $bagit_cool_name = substr($bagit_path,0,-4);
+  print STDERR "Move: $bagit_zip_path --> $bagit_cool_name\n";
+  move($bagit_zip_path, $bagit_cool_name);
+
+  return $bagit_cool_name;
+}
+
 sub _bucket_put_eprint {
 
-  my ($self, $eprint, $ark_t_id) = @_;
+  my ($self, $bagit_cool_name) = @_;
+
+  print STDERR "BUCKET_PUT_EPRINT\n";
 
   my $bucket = $self->_get_ingest_bucket;
 
-  my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>$ark_t_id);
-  # TODO replcae this with a perl library as long as it works just like this stuff 
-  my $bagit_zip_path = $bagit_path.".tar.gz";
-  #  my $bucket_key_path = $bagit_zip_path;
-  #  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
-  #  $bucket_key_path =~ s#^$arkivum_path##;
-
-  # This exec will leave a . (dot) in the path
-  #my $output = `/bin/tar -zcf $bagit_zip_path -C $bagit_path *`;
-  # This one will not insert a . (dot)
-  my $output = `find $bagit_path -printf "%P\n" -type f -o -type l -o -type d | tar -czf $bagit_zip_path --no-recursion -C $bagit_path -T -`;
-
-  return $self->_handle_bucket_error("Bagit tar file does not exist") unless(-e $bagit_zip_path);
-  use File::Copy;
-  
-  # Move the compressed bagit file to a cool sounding filename
-  my $bagit_cool_name = substr($bagit_path,0,-4);
-  move($bagit_zip_path, $bagit_cool_name);
+  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
 
   my $bucket_key_path = $bagit_cool_name;
-  my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
   $bucket_key_path =~ s#^$arkivum_path##;
 
   # Turn the local file path into an address we can use in bucket (and beyond)
-  # my $ingest_path=$self->_file_path_to_arkivum_path($bagit_path);
-  #my $ingest_path=EPrints::Utils::uri_escape_utf8($self->param( "datapool" )).$bucket_key_path;
   my $ingest_path=$self->param( "datapool" ).$bucket_key_path;
-  #  my $response = $bucket->add_key_filename($ingest_path,$bagit_zip_path,{content_type=>'application/gzip'});
-  my $object = $bucket->object(key=>$ingest_path, content_type=>'application/gzip');
-  my $response = $object->put_filename($bagit_cool_name);
 
+  my $object = $bucket->object(key=>$ingest_path, content_type=>'application/gzip');
+
+  print STDERR "we have a bucket object\n";
+
+  # do we need to send this as a multiparter?
+  my $chunk_threshold = 100 * 1024 * 1024; # 100MB
+  my $file_size = -s $bagit_cool_name;
+  print STDERR "File size: $file_size\n";
+  my $response;
+  if( $file_size <= $chunk_threshold ) # this is simple, just put the file as is
+  {
+    print "small file\n";
+    $response = $object->put_filename($bagit_cool_name);
+  }
+  else
+  {
+    print "big old file\n";
+
+    # Initiate the multipart upload
+    my $upload_id = $object->initiate_multipart_upload;
+
+    # Read the file in chunks and upload each part
+    my $part_size = 50 * 1024 * 1024; # 50MB
+    my @etags;
+    my @part_numbers;
+
+    open(my $fh, '<', $bagit_cool_name) or die "Failed to open file: $!";
+    my $part_number = 1;
+
+    while( my $data = _read_chunk( $fh, $part_size, $part_number ) )
+    {
+      print STDERR "chunk part: $part_number\n";
+      my $put_part_response = $object->put_part(
+        upload_id    => $upload_id,
+        part_number  => $part_number,
+        value    => $data,
+      );
+      push @etags, $put_part_response->header('ETag');
+      push @part_numbers, $part_number;
+
+      $part_number++;
+    }
+
+    print STDERR "complete the multipart\n";
+    $response = $object->complete_multipart_upload(
+      upload_id => $upload_id,
+      etags => \@etags,
+      part_numbers => \@part_numbers,
+    );
+  }
+  
+  #print STDERR "response: $response\n";
   return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
 
-  return ($ingest_path,$metadata_path);
+  # we had success putting the bag in the bucket
+  my $tidy = `rm $bagit_cool_name`;
+
+  return($ingest_path);
 }
 
 # POssibibly unused if we use bags
@@ -379,10 +456,36 @@ sub _bucket_get_request {
 
 }
 
+sub _bucket_delete_request {
+
+  my ($self, $bucket_key) = @_;
+
+  my $bucket = $self->_get_ingest_bucket;
+
+  my $object = $bucket->object(key=>$bucket_key);
+
+  if ($object->exists) { 
+    print STDERR "Removing object from bucket: ".$object->uri."\n";
+    $object->delete;
+  }
+
+}
+
 sub _log
 {
     my ( $self, $msg) = @_;
 
     $self->{repository}->log($msg);
+}
+
+# Helper function to read a chunk from the file
+sub _read_chunk {
+    my ($fh, $size, $part_number) = @_;
+    print STDERR "size: $size\n";
+    print STDERR "part_number: $part_number\n";
+    my $offset = ($part_number - 1) * $size;
+    seek($fh, $offset, 0);
+    read($fh, my $data, $size);
+    return $data;
 }
 
