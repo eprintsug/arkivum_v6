@@ -26,15 +26,6 @@ sub new
   return $self;
 }
 
-sub properties_from
-{
-    my( $self ) = @_;
-
-    $self->SUPER::properties_from;
-
-    $self->{processor}->{arkivum_transactions} = EPrints::DataObj::Arkivum->search_by_eprintid( $self->{repository}, $self->{processor}->{eprint}->id );
-}
-
 sub can_be_viewed
 {
   my( $self ) = @_;
@@ -51,6 +42,12 @@ sub render
 
   my $eprint = $self->{processor}->{eprint};
 
+  # get the transactions, if there are any
+  my $arkivum_transactions = EPrints::DataObj::Arkivum->search_by_eprintid( $self->{repository}, $self->{processor}->{eprintid} );
+
+  # and save them for later (as properties_from doesn't seem to run in time for eprints view tab screens)
+  $self->{processor}->{arkivum_transactions} = $arkivum_transactions;
+
   $page->appendChild( $repo->xml->create_element( "br" ) );
 
   # header stuff 
@@ -58,28 +55,37 @@ sub render
   $h2->appendChild($repo->make_text("Arkivum transactions for "));
   $h2->appendChild($eprint->render_value("title"));
 
-  # headline action 
+  # headline action - a reingest
   if( $self->allow_reingest )
   {
-    my $reingest_btn = $self->render_action_button(
-        {
-            action => "reingest",
-            screen => $self,
-        }
-    );
+    my $form = $self->render_form;
+    $form->appendChild( $repo->render_action_buttons(
+        _order => [ "reingest" ],
+        reingest => $repo->html_phrase( "arkivum_ingest" ),
+    ) );
 
-    $page->appendChild( $repo->render_message( "warning", $repo->html_phrase( "arkivum:archive_mismatch", reingest_button=>$reingest_btn ) ) ); 
+    if( !defined $arkivum_transactions )
+    {
+      # we have no ingests so far
+      $page->appendChild( $repo->render_message( "warning", $repo->html_phrase( "arkivum:first_ingest", reingest_button=>$form ) ) ); 
+    }
+    else # this eprint has changed since the last reingest
+    {
+      $page->appendChild( $repo->render_message( "warning", $repo->html_phrase( "arkivum:archive_mismatch", reingest_button=>$form ) ) ); 
+    }
   }
 
-  if( $self->{processor}->{arkivum_transactions} )
+  # if we have a list transactions, display those
+  if( defined $arkivum_transactions )
   {
     my $ind = 0;
-    $self->{processor}->{arkivum_transactions}->map(sub {
+    $arkivum_transactions->map(sub {
       my ($session, undef, $ark_t) = @_;
       $page->appendChild( $self->render_arkivum_transaction( $ark_t, $ind ) );    
       $ind++;
     });
- 
+  }
+
   return $page;
 }
 
@@ -90,8 +96,6 @@ sub render_arkivum_transaction
   my $repo = $self->{repository};
   my $eprint = $self->{processor}->{eprint};
   my $ul = $repo->xml->create_element( "ul" ); # wrapper
-
-  $eprint = $repo->get_dataset("eprint")->dataobj($ark_t->value("eprintid")) if $ark_t->is_set("eprintid");
 
   my $frag = $repo->make_doc_fragment;
   my $div = $repo->make_element( "div", class => "arkivum_document" );
@@ -162,10 +166,48 @@ sub render_arkivum_actions
   my $repo = $self->{repository};
 
   my $arkivum_actions = $repo->make_element( "div", class=> "arkivum_actions" );
-  $arkivum_actions->appendChild( $self->render_action_list_bar( "arkivum_transaction_actions", {
-        eprintid => $eprint->id,
-        arkivumid => $ark_t->id,
-  } ) ); 
+
+  my $arkivum_screen = $self->{session}->plugin( "Screen::ManageArkivum", processor => $self->{processor}, arkivumid => $ark_t->id, eprintid => $eprint->id );
+
+  my $report_button = $self->render_action_button_if_allowed(
+    {
+      action => "report",
+      screen => $arkivum_screen,
+      screen_id => $arkivum_screen->{id},
+    },
+    {
+      eprintid => $eprint->id,
+      arkivumid => $ark_t->id,
+    },
+  );
+
+  my $restore_button = $self->render_action_button_if_allowed(
+    {
+      action => "restore_to_local",
+      screen => $arkivum_screen,
+      screen_id => $arkivum_screen->{id},
+    },
+    {
+      eprintid => $eprint->id,
+      arkivumid => $ark_t->id,
+    },
+  );
+
+  my $deletion_button = $self->render_action_button_if_allowed(
+    {
+      action => "request_deletion",
+      screen => $arkivum_screen,
+      screen_id => $arkivum_screen->{id},
+    },
+    {
+      eprintid => $eprint->id,
+      arkivumid => $ark_t->id,
+    },
+  );
+
+  $arkivum_actions->appendChild( $report_button );
+  $arkivum_actions->appendChild( $restore_button );
+  $arkivum_actions->appendChild( $deletion_button );
 
   return $arkivum_actions;
 }
@@ -175,25 +217,30 @@ sub allow_reingest
   my( $self ) = @_;
 
   my $repo = $self->{repository};
- 
+
   if( !defined $self->{processor}->{arkivum_transactions} )
   {
-      # we have no transactions, but can we create one?
-
+    # we have no transactions, but can we create one?
+    if( $repo->call( ['arkivum','can_archive_eprint'], $self->{processor}->{eprint} ) )
+    {
+        return 1;
+    }    
   }
-
-  # otherwise we have transactions, so let's check the latest and see if it matches our current fingerprint
-  my $latest = $self->{processor}->{arkivum_transactions}->item( 0 );
-  return undef if ( !defined $latest );
-
-  return $latest->value("archive_fingerprint") ne $latest->take_fingerprint($self->{processor}->{eprint});
+  else
+  {
+    # otherwise we have transactions, so let's check the latest and see if it matches our current fingerprint
+    my $latest = $self->{processor}->{arkivum_transactions}->item( 0 );
+    return undef if ( !defined $latest );
+  
+    # does the latest one match the eprint? If so don't allow reingest, but if the eprint has changed, we're good to go ahead
+    return $latest->value("archive_fingerprint") ne $latest->take_fingerprint($self->{processor}->{eprint});
+  }
 }
 
 
 sub action_reingest
 {
   my( $self ) = @_;
-
   my $repo = $self->{repository};
   return undef if ( !defined $repo );
 

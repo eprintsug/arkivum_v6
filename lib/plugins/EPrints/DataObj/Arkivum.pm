@@ -282,23 +282,22 @@ sub render_arkivum_status_summary
 sub take_fingerprint {
 
   my ( $self, $eprint ) = @_;
-  
+
   my $repo = $eprint->repository;
-  my $sm = $repo->get_conf("arkivum","significant_metadata", "eprint");
+  my %sm = %{$repo->get_conf("arkivum","significant_metadata", "eprint")};
   my %data;
 
-  for my $field(@{$sm}){
- 
-    if( ref( $field ) eq "CODE" ) {
-    # TODO do somethign clever with CODE
+  for my $key(keys %sm){
+    if( ref( $sm{$key} ) eq "CODE" ) {
+      $data{$key} = &{$sm{$key}}( $repo, $eprint );
     }else{
-      $data{$field} = $eprint->value($field);
+      $data{$key} = $eprint->value($key);
     }
   }
- 
-  return $self->serialise_and_hash_metadata(\%data);
 
+  return $self->serialise_and_hash_metadata(\%data);
 }
+
 
 sub serialise_and_hash_metadata {
 

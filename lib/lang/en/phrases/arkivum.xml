@@ -243,10 +243,14 @@
 <!-- Arkivum v6 -->
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:title">Arkivum</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:data:title">Arkivum transactions</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_report:title">Update ingest report</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_reingest:title">Re-ingest</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_restore_to_local:title">Restore files to local storage</epp:phrase>
-<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/action_request_deletion:title">Request deletion</epp:phrase>
+
+<epp:phrase id="Plugin/Screen/EPrint/ArkivumV6:action:reingest:title">Ingest</epp:phrase>
+
+<epp:phrase id="Plugin/Screen/ManageArkivum:action:report:title">Update ingest report</epp:phrase>
+<epp:phrase id="Plugin/Screen/ManageArkivum:action:restore_to_local:title">Restore files to local storage</epp:phrase>
+<epp:phrase id="Plugin/Screen/ManageArkivum:action:request_deletion:title">Request deletion</epp:phrase>
+
+<epp:phrase id="Plugin/Screen/ManageArkivum:report">New Arkivum rpeort requested</epp:phrase>
 
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/render_report:title">Arkivum transaction for document: <epc:pin name="doc"/></epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/ArkivumV6/render_eprint_report:title">Arkivum transaction for EPrint: <epc:pin name="eprint"/></epp:phrase>
@@ -294,7 +298,9 @@
 <epp:phrase id="arkivum_process_REPLICATION">Replication</epp:phrase>
 <epp:phrase id="arkivum_process_FIXITY">Fixity</epp:phrase>
 
-<epp:phrase id="arkivum:archive_mismatch"><br/><p>It looks like there has been a change to this record since it was last ingested into Arkivum. Perhaps you would like to re-ingest this item to Arkivum.</p><epc:pin name="reingest_button"/></epp:phrase>
+<epp:phrase id="arkivum:first_ingest"><br/><p>This record has not yet been ingested to Arkivum, but is eligible for ingest. Would you like to ingest this item to Arkivum?</p><epc:pin name="reingest_button"/></epp:phrase>
+
+<epp:phrase id="arkivum:archive_mismatch"><br/><p>It looks like there has been a change to this record since it was last ingested into Arkivum. Perhaps you would like to re-ingest this item to Arkivum?</p><epc:pin name="reingest_button"/></epp:phrase>
 
 
 

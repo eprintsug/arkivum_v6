@@ -92,8 +92,13 @@
  width: 60%;
  text-align: right;
  margin: 10px;
-
 }
+
+.ep_arkivum_view_panel > .arkivum_actions form {
+ display: inline-block;
+ margin: 5px;
+}
+
 
 .arkivum_report.ep_table .ep_table_cell.ep_table_colspan,
 .arkivum_report.ep_table .ep_table_cell.ep_table_colspan+.ep_table_cell {
