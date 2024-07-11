@@ -109,7 +109,17 @@ sub parse_arkivum_status
     my( $self, $arkivum_status ) = @_;
    
     $arkivum_status = $self->value("arkivum_status") if ! defined $arkivum_status;
-    return decode_json($arkivum_status);
+
+    my $json = eval { decode_json( $arkivum_status ) };
+    if( $@ )
+    {
+        print STDERR "Error parsing JSON for Arkivum record: " . $self->id . "\n";
+        return undef;
+    }
+    else
+    {
+        return $json;
+    }
 }
 
 sub stepwise_arkivum_status {
