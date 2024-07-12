@@ -33,9 +33,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/DataObj/Arkivum.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>de169d5fab5131c07c21509685232c88</hash>
+          <hash>0de9128655db600a502786f5994041ab</hash>
           <hash_type>MD5</hash_type>
-          <filesize>12652</filesize>
+          <filesize>12654</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -84,7 +84,7 @@
       <content>install</content>
     </document>
   </documents>
-  <version>0.2</version>
+  <version>0.3</version>
   <creators>
     <item>
       <name>

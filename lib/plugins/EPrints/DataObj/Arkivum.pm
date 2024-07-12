@@ -33,7 +33,7 @@ sub get_system_field_info
         #    multiple => 1,
         #},
         { name=>"access_date", type=>"time", required=>0, },
-        { name => "arkivum_status", type => 'longtext',	render_value=>"EPrints::DataObj::Arkivum::render_arkivum_status_summary" },
+        { name => "arkivum_status", type => 'dblongtext',	render_value=>"EPrints::DataObj::Arkivum::render_arkivum_status_summary" },
         # can't use item ref because that expectes an int and eventqueueid is a hash
         { name => "eventid", type => "id" },
         { name => "ingestid", type => "id" },
