@@ -222,7 +222,7 @@ sub output_dataobj
     $csv->print($fh,\@values);
 
     # Object line
-    my @object_values = ("PCDM_Object_".$eprintid."_".$arkivumid,"O","PCDM_Collection_".$eprintid."_".$arkivumid,"PCDM_Object_".$eprintid."_".$arkivumid);
+    my @object_values = ("PCDM_Object_".$eprintid."_".$arkivumid,"O","PCDM_Collection_".$eprintid."_".$arkivumid);
     $csv->print($fh,\@object_values);
 
     # File lines

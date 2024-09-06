@@ -34,26 +34,31 @@ sub new {
 sub ingest_eprint {
   my ($self, $eprint, $ark_t_id) = @_;
 
-  # 1) Create a bag for this eprint
+  # 1) Generate a hash of document pos's to mimetypes
+  my $mime_types = {};
+  my @docs = $eprint->get_all_documents;
+  foreach my $doc ( @docs )
+  {
+    my $pos = $doc->value( "pos" );
+    foreach my $file ( @{$doc->get_value( "files" )} )
+    {
+        my $filename = $file->get_value( "filename" );
+        $mime_types->{$pos}->{$filename} = $file->value( "mime_type" );
+    }
+  }
+
+  # 2) Create a bag for this eprint
   my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>$ark_t_id);
 
-  # 2) Post the metadata to the bucket
-  my $bucket_metadata_path = $self->_bucket_put_metadata($metadata_path);
+  # 3) Post tar file to the bucket
+  my $bucket_path = $self->_bucket_put_eprint($bagit_path);
+  my $bucket_metadata_path = $bucket_path . "/ark-file-meta.csv";
 
-  # 3) Tar up the bag and remove the the bag dir
-  my $bagit_zip_path = $self->_tar_bag( $bagit_path );
-
-  # 4) Post tar file to the bucket
-  my $bucket_path = $self->_bucket_put_eprint($bagit_zip_path);
-
-  # Then we call the ingest endpoint to start the actual ingest
+  # 4) Call the ingest endpoint to start the actual ingest - we can point this at the bag "directory"
   my $url = URI->new('/ingest');
   my $folder_path = $self->_unique_folder_name($eprint, $ark_t_id);
 
-  print STDERR "HAVE FOLDER PATH: $folder_path\n";
-
-  #  $url->query_form({ingestPath=>$bucket_path, folderPath=> $folder_path, datapool=>$self->param("datapool"), metadataPath=>$metadata_path, isArchive=>"true" });
-  $url->query_form({ingestPath=>$bucket_path, folderPath=> $folder_path, datapool=>$self->_datapool, isArchive=>"true", metadataPath=>$bucket_metadata_path });
+  $url->query_form({ingestPath=>$bucket_path, folderPath=> $folder_path, datapool=>$self->_datapool, metadataPath=>$bucket_metadata_path });
 
   return $self->_arkivum_post_request($url, undef);
 }
@@ -190,7 +195,6 @@ sub _build_request_uri {
     my( $self, $endpoint, $file_ref ) = @_;
 
     my $api_host = $self->param( "api_host" );
-    print STDERR "API HOST: ".$api_host."\n";
     $endpoint =~ s/^\///; #strip leading slash from enpoint
     $file_ref =~ s/^\/// if $file_ref; #strip leading slash from file_ref
     $api_host =~ s/\/$//; #strip trailing slash from api_host
@@ -318,6 +322,7 @@ sub _get_ingest_bucket {
    
 }
 
+### Un-used Function ###
 sub _tar_bag {
 
   my ($self, $bagit_path ) = @_;
@@ -325,25 +330,26 @@ sub _tar_bag {
   my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
   my $bagit_zip_path = $bagit_path.".tar.gz";
 
+  $self->_log("Tarring to tmp dir");
   my $tar = Archive::Tar::Wrapper->new(tmpdir => $arkivum_path);
   find(
     sub {
         return unless -f;  # Add only regular files
         my $file_path = $File::Find::name;
         my $rel_path = abs2rel($file_path, $bagit_path);
-	print STDERR "Adding $rel_path from $file_path\n";
-  	$tar->add($rel_path, $file_path);
+        $tar->add($rel_path, $file_path);
     },
     $bagit_path
   );
 
-  print STDERR "And write to $bagit_zip_path\n";
-  $tar->write( $bagit_zip_path );
-
   # tidy away the bag now we've tar'd it AND put the metadata from it in the bucket
   my $tidy = `rm -rf $bagit_path`;
+
+  $self->_log( "And write to $bagit_zip_path" );
+  $self->_log( "And zip it this time!!!" );
+  $tar->write( $bagit_zip_path, 1 );
   
-  # amd tidy away the dir used by Tar::Wrapper to make the tar
+  # and tidy away the dir used by Tar::Wrapper to make the tar
   $tar = undef;
  
   # Move the compressed bagit file to a cool sounding filename
@@ -357,78 +363,108 @@ sub _tar_bag {
 
 sub _bucket_put_eprint {
 
-  my ($self, $bagit_cool_name) = @_;
+  my ($self, $bagit_path, $mime_types) = @_;
 
-  print STDERR "BUCKET_PUT_EPRINT\n";
+  # first derive a "cool" name (i.e. strip _BAG off the end...)
+  my $bagit_cool_name = substr($bagit_path,0,-4);
 
+  # get our bucket
   my $bucket = $self->_get_ingest_bucket;
 
+  # create a prefix for our bucket keys
   my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
-
   my $bucket_key_path = $bagit_cool_name;
   $bucket_key_path =~ s#^$arkivum_path##;
 
-  # Turn the local file path into an address we can use in bucket (and beyond)
-  my $ingest_path=$self->param( "datapool" ).$bucket_key_path;
+  # now add each file from the Bag to the bucket
+  find(
+    sub {
+        return unless -f;  # Add only regular files
+        my $file_path = $File::Find::name;
 
-  my $object = $bucket->object(key=>$ingest_path, content_type=>'application/gzip');
+        # get file size to work out if multi-part upload
+        my $file_size = -s $file_path;
+        my $rel_path = abs2rel($file_path, $bagit_path);
 
-  print STDERR "we have a bucket object\n";
+        # get a key for this file
+        my $ingest_path = $self->param( "datapool" ).$bucket_key_path."/".$rel_path;
 
-  # do we need to send this as a multiparter?
-  my $chunk_threshold = 100 * 1024 * 1024; # 100MB
-  my $file_size = -s $bagit_cool_name;
-  print STDERR "File size: $file_size\n";
-  my $response;
-  if( $file_size <= $chunk_threshold ) # this is simple, just put the file as is
-  {
-    print "small file\n";
-    $response = $object->put_filename($bagit_cool_name);
-  }
-  else
-  {
-    print "big old file\n";
+        # get the mime type
+        my $mime = "application/octet-stream";
+        if( $rel_path eq "ark-file-meta.csv" )
+        {
+          $mime = "text/csv";
+        }
+        elsif( $rel_path eq "data/metadata/EP3.xml" )
+        {
+          $mime = "text/xml";
+        }
+        elsif( $rel_path eq "manifest-md5.txt" || $rel_path eq "bagit.txt" )
+        {
+          $mime = "text/plain";
+        }
+        elsif( $rel_path =~ m/^data\/documents\/([\d+])\/(.+)$/ )
+        {
+          my $pos = $0;
+          my $filename = $1;
+          if( exists $mime_types->{$pos} && exists $mime_types->{$pos}->{$filename} )
+          {
+            $mime = $mime_types->{$pos}->{$filename};
+          }
+        }
 
-    # Initiate the multipart upload
-    my $upload_id = $object->initiate_multipart_upload;
+        # create a bucket object for our file
+        my $object = $bucket->object(key=>$ingest_path, content_type=>$mime);
 
-    # Read the file in chunks and upload each part
-    my $part_size = 50 * 1024 * 1024; # 50MB
-    my @etags;
-    my @part_numbers;
+        # do we need to send this as a multiparter?
+        my $chunk_threshold = 1 * 1024 * 1024 * 1024; # 1GB
+        my $response;
+        if( $file_size <= $chunk_threshold ) # this is simple, just put the file as is
+        {
+          $response = $object->put_filename($file_path);
+        }
+        else
+        {
+          # Initiate the multipart upload
+          my $upload_id = $object->initiate_multipart_upload;
 
-    open(my $fh, '<', $bagit_cool_name) or die "Failed to open file: $!";
-    my $part_number = 1;
+          # Read the file in chunks and upload each part
+          my $part_size = 1 * 1024 * 1024 * 1024; # 1GB
+          my @etags;
+          my @part_numbers;
 
-    while( my $data = _read_chunk( $fh, $part_size, $part_number ) )
-    {
-      print STDERR "chunk part: $part_number\n";
-      my $put_part_response = $object->put_part(
-        upload_id    => $upload_id,
-        part_number  => $part_number,
-        value    => $data,
-      );
-      push @etags, $put_part_response->header('ETag');
-      push @part_numbers, $part_number;
+          open(my $fh, '<', $file_path) or die "Failed to open file: $!";
+          my $part_number = 1;
 
-      $part_number++;
-    }
+          while( my $data = _read_chunk( $fh, $part_size, $part_number ) )
+          {
+            my $put_part_response = $object->put_part(
+              upload_id    => $upload_id,
+              part_number  => $part_number,
+              value    => $data,
+            );
+            push @etags, $put_part_response->header('ETag');
+            push @part_numbers, $part_number;
 
-    print STDERR "complete the multipart\n";
-    $response = $object->complete_multipart_upload(
-      upload_id => $upload_id,
-      etags => \@etags,
-      part_numbers => \@part_numbers,
-    );
-  }
+            $part_number++;
+          }
+
+          $response = $object->complete_multipart_upload(
+            upload_id => $upload_id,
+            etags => \@etags,
+            part_numbers => \@part_numbers,
+          );
+        }
   
-  #print STDERR "response: $response\n";
-  return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
+        return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
+    },
+    $bagit_path
+  );
 
-  # we had success putting the bag in the bucket
-  my $tidy = `rm $bagit_cool_name`;
+  # tidy away the bag now we've put in the bucket
+  my $tidy = `rm -rf $bagit_path`;
 
-  return($ingest_path);
+  return $self->param( "datapool" ).$bucket_key_path;
 }
 
 # POssibibly unused if we use bags
@@ -481,8 +517,6 @@ sub _log
 # Helper function to read a chunk from the file
 sub _read_chunk {
     my ($fh, $size, $part_number) = @_;
-    print STDERR "size: $size\n";
-    print STDERR "part_number: $part_number\n";
     my $offset = ($part_number - 1) * $size;
     seek($fh, $offset, 0);
     read($fh, my $data, $size);

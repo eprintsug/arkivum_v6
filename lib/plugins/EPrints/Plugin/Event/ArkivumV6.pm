@@ -141,7 +141,7 @@ sub ingest_report {
   my $event = $self->_get_event($ark_t);
 
   print STDERR "### success is $success and monitor_attempts is $monitor_attempts\n";
-  if(!$success){	  
+  if(!$success){
     if($monitor_attempts <= 17){ # 17 attempts == 2^17 = ~36 hours # TODO make that 17 a configurable item
       # We will set the time as per the _get_start_time
       $event->set_value("start_time", $self->_get_start_time($event,$monitor_attempts));
@@ -184,10 +184,35 @@ sub _remove_bucket_copy {
   
   return undef if ! defined $storage;
 
+  my @bucket_keys;
+
   my $bucket_key = $storage->param("datapool")."/".$ark_t->value("eprintid")."_".$ark_t->id;
   my $bucket_md_key = $bucket_key."_BAG/ark-file-meta.csv";
 
-  $storage->_bucket_delete_request($bucket_key);
+  # get keys for everything in the bucket
+  my $eprint = $repo->dataset("eprint")->dataobj($ark_t->value("eprintid"));
+  my @docs = $eprint->get_all_documents;
+  foreach my $doc ( @docs )
+  {
+    my $pos = $doc->value( "pos" );
+    foreach my $file ( @{$doc->get_value( "files" )} )
+    {
+        my $filename = $file->get_value( "filename" );
+        push @bucket_keys, $bucket_key . "/data/documents/" . $pos . "/" . $filename;
+    }
+  }
+
+  # Expected BagIt files
+  push @bucket_keys, $bucket_key . "/bagit.txt";
+  push @bucket_keys, $bucket_key . "/data/metadata/EP3.xml";
+  push @bucket_keys, $bucket_key . "/manifest-md5.txt";
+  push @bucket_keys, $bucket_key . "/ark-file-meta.csv";
+
+  # and now remove each one from the bucket
+  foreach my $bk ( @bucket_keys )
+  {
+    $storage->_bucket_delete_request($bk);
+  }
   $storage->_bucket_delete_request($bucket_md_key);
 
 }
