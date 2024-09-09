@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w
+
+use FindBin;
+use lib "$FindBin::Bin/../../../perl_lib";
+
+######################################################################
+#
+#
+######################################################################
+
+use EPrints;
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+
+my $repoid = $ARGV[0];
+my $repo = new EPrints::Session( 1 , $repoid );
+if( !defined $repo )
+{
+    print STDERR "Failed to load repository: $repoid\n";
+    exit 1;
+}
+
+my $bucket_storage = $repo->plugin( "Storage::ArkivumV6" );
+
+# get the bucket
+my $s3 = $bucket_storage->_bucket_connect;
+
+if( !defined $s3 )
+{
+   print STDERR "Failed to connect to S3\n";
+}
+
+my $bucket = $s3->bucket( name => $bucket_storage->param("bucket_name") );
+if( !defined $bucket )
+{
+    print STDERR "Failed to find bucket\n";
+}
+
+my $count = 0;
+  my $stream = $bucket->list;
+  until ( $stream->is_done ) {
+    foreach my $object ( $stream->items ) {
+	    $object->delete;
+    }
+}

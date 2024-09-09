@@ -15,6 +15,14 @@
         </file>
         <file>
           <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/swill_bucket</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>906047904b1fd6c6b4c38d0ba093e0dc</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>938</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
           <mime_type>text/plain</mime_type>
           <hash>4bbf37d1abedfe95df39a1cee0aa3bff</hash>
@@ -41,17 +49,17 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Event/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>4461d61c8e810c023a0acd1b00f68229</hash>
+          <hash>203ce4aeeb9cdc548404b8e2c2938c92</hash>
           <hash_type>MD5</hash_type>
-          <filesize>8944</filesize>
+          <filesize>9731</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Export/Bagit.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>e182c98dfe1b2a6344db16aaf2c4ce1a</hash>
+          <hash>ddf6b8127d7972d5cebdc2cc870d06cd</hash>
           <hash_type>MD5</hash_type>
-          <filesize>16203</filesize>
+          <filesize>16163</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -65,9 +73,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>4a97389de1c5c68117ae6f9dd7a89101</hash>
+          <hash>54bc8da49514cf78290f3dec3ce0bdde</hash>
           <hash_type>MD5</hash_type>
-          <filesize>13471</filesize>
+          <filesize>14568</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -84,7 +92,7 @@
       <content>install</content>
     </document>
   </documents>
-  <version>0.3</version>
+  <version>0.5</version>
   <creators>
     <item>
       <name>
