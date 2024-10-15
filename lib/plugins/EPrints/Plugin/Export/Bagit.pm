@@ -165,34 +165,29 @@ sub output_dataobj
     # first get the generic DC export plugin and use it to get an array of data
     my $dc_export = $session->plugin( "Export::DC" );
     my $dc_metadata = $dc_export->convert_dataobj( $dataobj );
-    #    print Dumper($dc_metadata)."\n";
-    #my @headers = map { "dc.".$_->[0] } @{$dc_metadata};
     my @headers;
     foreach my $dc_data (@{$dc_metadata})
     {
             push @headers, "dc.".$dc_data->[0];
     }    
-    my @values;
+
+    my @object_values;
     foreach my $dc_data (@{$dc_metadata})
     {
-        #        print STDERR Dumper( $dc_data );
         if( $dc_data->[0] eq "date" )
         {
             my($year,$month,$day) = split /-/, $dc_data->[1];
-            push @values, '' unless defined $year;
+            push @object_values, '' unless defined $year;
             $month=1 unless defined $month;
             $day=1 unless defined $day;
             my $date = DateTime->new(year=>$year, month=>$month, day=>$day);
-            push @values, $date;
+            push @object_values, $date;
         }
         else
         {
-            push @values, $dc_data->[1];
+            push @object_values, $dc_data->[1];
         }
     }
-    #    print STDERR Dumper( @values );
-    #my @values = map { $_->[1] } @{$dc_metadata};
-    # Maybe remove the identifier that is the citation if we can identify it
 
     use Text::CSV_XS;
     my $dc_file = "ark-file-meta.csv";
@@ -210,19 +205,14 @@ sub output_dataobj
     open my $fh, ">:encoding(utf8)", $dc_file_path or warn "$dc_file_path: $!";
     $csv->print($fh,\@headers);
 
-    # Collection line
-    # push @values, ($dataobj->id, "eprintid");
+    # Object line
     foreach my $id (@{$identifiers}){
         while(my($key,$value) = each(%{$id})){
-            push @values, ($value, $key);
+            push @object_values, ($value, $key);
         }
     }
 
-    unshift @values, ("PCDM_Collection_".$eprintid."_".$arkivumid,"C","");
-    $csv->print($fh,\@values);
-
-    # Object line
-    my @object_values = ("PCDM_Object_".$eprintid."_".$arkivumid,"O","PCDM_Collection_".$eprintid."_".$arkivumid);
+    unshift @object_values, ("PCDM_Object_".$eprintid."_".$arkivumid,"O","");
     $csv->print($fh,\@object_values);
 
     # File lines
