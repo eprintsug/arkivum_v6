@@ -25,9 +25,9 @@
           <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
           <mime_type>text/plain</mime_type>
-          <hash>4bbf37d1abedfe95df39a1cee0aa3bff</hash>
+          <hash>7fdde8861fee1cd33eff009a3e42e8b5</hash>
           <hash_type>MD5</hash_type>
-          <filesize>7524</filesize>
+          <filesize>7704</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -57,9 +57,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Export/Bagit.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>5a6268bf6f693268d1b0d340a89b1fb1</hash>
+          <hash>7ffa9a3bbe42adbac29c7e2de041d450</hash>
           <hash_type>MD5</hash_type>
-          <filesize>15666</filesize>
+          <filesize>16441</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -73,9 +73,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>54bc8da49514cf78290f3dec3ce0bdde</hash>
+          <hash>260388c33a684bea4a658acc819be6a4</hash>
           <hash_type>MD5</hash_type>
-          <filesize>14568</filesize>
+          <filesize>14581</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -92,7 +92,7 @@
       <content>install</content>
     </document>
   </documents>
-  <version>0.6</version>
+  <version>0.7</version>
   <creators>
     <item>
       <name>

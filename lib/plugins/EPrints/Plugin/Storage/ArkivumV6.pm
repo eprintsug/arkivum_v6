@@ -6,7 +6,6 @@ use LWP::UserAgent;
 #use Amazon::S3;
 use Net::Amazon::S3::Client;
 
-use Archive::Tar::Wrapper;
 use File::Find;
 use File::Spec::Functions qw(abs2rel);
 
@@ -58,7 +57,7 @@ sub ingest_eprint {
   my $url = URI->new('/ingest');
   my $folder_path = $self->_unique_folder_name($eprint, $ark_t_id);
 
-  $url->query_form({ingestPath=>$bucket_path, folderPath=> $folder_path, datapool=>$self->_datapool, metadataPath=>$bucket_metadata_path });
+  $url->query_form({ingestPath=>$bucket_path, folderPath=> $folder_path, datapool=>$self->_datapool, metadataPath=>$bucket_metadata_path, ingestCreateCol=>"false" });
 
   return $self->_arkivum_post_request($url, undef);
 }
@@ -323,6 +322,7 @@ sub _get_ingest_bucket {
 }
 
 ### Un-used Function ###
+=comment
 sub _tar_bag {
 
   my ($self, $bagit_path ) = @_;
@@ -360,6 +360,7 @@ sub _tar_bag {
 
   return $bagit_cool_name;
 }
+=cut
 
 sub _bucket_put_eprint {
 

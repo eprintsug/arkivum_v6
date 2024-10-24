@@ -170,22 +170,21 @@ sub output_dataobj
     {
             push @headers, "dc.".$dc_data->[0];
     }    
-
-    my @object_values;
+    my @values;
     foreach my $dc_data (@{$dc_metadata})
     {
         if( $dc_data->[0] eq "date" )
         {
             my($year,$month,$day) = split /-/, $dc_data->[1];
-            push @object_values, '' unless defined $year;
+            push @values, '' unless defined $year;
             $month=1 unless defined $month;
             $day=1 unless defined $day;
             my $date = DateTime->new(year=>$year, month=>$month, day=>$day);
-            push @object_values, $date;
+            push @values, $date;
         }
         else
         {
-            push @object_values, $dc_data->[1];
+            push @values, $dc_data->[1];
         }
     }
 
@@ -194,10 +193,19 @@ sub output_dataobj
     my $dc_file_path = "$target_path/$dc_file";
     my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1, eol => $/ });
 
-    my $identifiers = [{eprintid => $dataobj->id },{arkivumid => $arkivumid}];
+    my $identifiers_namespace = "identifiers";
+    $identifiers_namespace = $session->config( "arkivum", "identifier_namespace" ) if defined $session->config( "arkivum", "identifier_namespace" );
+
+    my $recordid = "eprintid";
+    $recordid = $session->config( "arkivum", "record_id_name" ) if defined $session->config( "arkivum", "record_id_name" );
+
+    my $transactionid = "arkivumid";
+    $transactionid = $session->config( "arkivum", "transaction_id_name" ) if defined $session->config( "arkivum", "transaction_id_name" );
+
+    my $identifiers = [{$recordid => $dataobj->id },{$transactionid => $arkivumid}];
     my $i = 0;
     foreach(@{$identifiers}){
-        push @headers, ("identifiers.".$i.".identifier", "identifiers.".$i.".identifierType");
+        push @headers, ("$identifiers_namespace.".$i.".$recordid", "$identifiers_namespace.".$i.".$transactionid");
         $i++;
     }
 
@@ -205,14 +213,19 @@ sub output_dataobj
     open my $fh, ">:encoding(utf8)", $dc_file_path or warn "$dc_file_path: $!";
     $csv->print($fh,\@headers);
 
-    # Object line
+    # Collection line
+    # push @values, ($dataobj->id, "eprintid");
     foreach my $id (@{$identifiers}){
         while(my($key,$value) = each(%{$id})){
-            push @object_values, ($value, $key);
+            push @values, ($value, $key);
         }
     }
 
-    unshift @object_values, ("PCDM_Object_".$eprintid."_".$arkivumid,"O","");
+    unshift @values, ("PCDM_Collection_".$eprintid."_".$arkivumid,"C","");
+    $csv->print($fh,\@values);
+
+    # Object line
+    my @object_values = ("PCDM_Object_".$eprintid."_".$arkivumid,"O","PCDM_Collection_".$eprintid."_".$arkivumid,"PCDM_Object_".$eprintid."_".$arkivumid);
     $csv->print($fh,\@object_values);
 
     # File lines

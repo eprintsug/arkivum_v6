@@ -24,6 +24,12 @@ $c->{arkivum}->{bagit_version} = '1.0';
 $c->{arkivum}->{bagit_encoding} = 'UTF-8';
 $c->{arkivum}->{path} = '/var/tmp/arkivum/test';
 
+### Arkivum Namespace Identifiers
+$c->{arkivum}->{identifier_namespace} = "cs";
+$c->{arkivum}->{transaction_id_name} = "arkivumid";
+$c->{arkivum}->{record_id_name} = "eprintid";
+
+
 push @{$c->{user_roles}{admin}}, qw(
     +arkivum/details
     +arkivum/view
