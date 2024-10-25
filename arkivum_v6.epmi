@@ -57,9 +57,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Export/Bagit.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>7ffa9a3bbe42adbac29c7e2de041d450</hash>
+          <hash>a3e1e37c58802faaf72686e0fd621a6c</hash>
           <hash_type>MD5</hash_type>
-          <filesize>16441</filesize>
+          <filesize>16679</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>

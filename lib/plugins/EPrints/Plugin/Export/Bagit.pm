@@ -193,33 +193,44 @@ sub output_dataobj
     my $dc_file_path = "$target_path/$dc_file";
     my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1, eol => $/ });
 
-    my $identifiers_namespace = "identifiers";
-    $identifiers_namespace = $session->config( "arkivum", "identifier_namespace" ) if defined $session->config( "arkivum", "identifier_namespace" );
+    if( $session->config( "arkivum", "identifier_namespace" ) )
+    {
+        my $identifier_namespace = $session->config( "arkivum", "identifier_namespace" );
 
-    my $recordid = "eprintid";
-    $recordid = $session->config( "arkivum", "record_id_name" ) if defined $session->config( "arkivum", "record_id_name" );
+        # we have a dedicated namespace for our eprint and arkivum identifiers
+        # state two explicit headers for the eprintid and arkivum id
+        push @headers, ( $identifier_namespace . "." . $session->config( "arkivum", "record_id_name" ),
+                         $identifier_namespace . "." . $session->config( "arkivum", "transaction_id_name" ) );
 
-    my $transactionid = "arkivumid";
-    $transactionid = $session->config( "arkivum", "transaction_id_name" ) if defined $session->config( "arkivum", "transaction_id_name" );
-
-    my $identifiers = [{$recordid => $dataobj->id },{$transactionid => $arkivumid}];
-    my $i = 0;
-    foreach(@{$identifiers}){
-        push @headers, ("$identifiers_namespace.".$i.".$recordid", "$identifiers_namespace.".$i.".$transactionid");
-        $i++;
+        # followed by two values
+        push @values, ($dataobj->id, $arkivumid );
     }
+    else # assume a default use of the identifiers namespace in Arkivum datapool
+    {
+        # first add the headers
+        my $identifiers = [{eprintid => $dataobj->id },{arkivumid => $arkivumid}];
+        my $i = 0;
+        foreach(@{$identifiers})
+        {
+            push @headers, ("identifiers.".$i.".identifier", "identifiers.".$i.".identifierType");
+            $i++;
+        }
 
+        # then the values
+        foreach my $id (@{$identifiers})
+        {
+            while(my($key,$value) = each(%{$id}))
+            {
+                push @values, ($value, $key);
+            }
+        }
+    }
+ 
     unshift @headers, ("id","type","parent_id");
     open my $fh, ">:encoding(utf8)", $dc_file_path or warn "$dc_file_path: $!";
     $csv->print($fh,\@headers);
 
     # Collection line
-    # push @values, ($dataobj->id, "eprintid");
-    foreach my $id (@{$identifiers}){
-        while(my($key,$value) = each(%{$id})){
-            push @values, ($value, $key);
-        }
-    }
 
     unshift @values, ("PCDM_Collection_".$eprintid."_".$arkivumid,"C","");
     $csv->print($fh,\@values);
