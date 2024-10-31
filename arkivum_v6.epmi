@@ -57,9 +57,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Export/Bagit.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>a3e1e37c58802faaf72686e0fd621a6c</hash>
+          <hash>4ff43ae05c6e32561fd351ecf3f1e2bc</hash>
           <hash_type>MD5</hash_type>
-          <filesize>16679</filesize>
+          <filesize>16786</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -73,9 +73,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>260388c33a684bea4a658acc819be6a4</hash>
+          <hash>1dcf537a2e08c002bef14014bbe3874f</hash>
           <hash_type>MD5</hash_type>
-          <filesize>14581</filesize>
+          <filesize>14685</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>

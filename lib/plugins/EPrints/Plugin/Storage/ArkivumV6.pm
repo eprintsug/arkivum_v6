@@ -41,7 +41,7 @@ sub ingest_eprint {
     my $pos = $doc->value( "pos" );
     foreach my $file ( @{$doc->get_value( "files" )} )
     {
-        my $filename = $file->get_value( "filename" );
+        my $filename = EPrints::Utils::uri_escape_utf8( $file->get_value( "filename" ) );
         $mime_types->{$pos}->{$filename} = $file->value( "mime_type" );
     }
   }
@@ -49,8 +49,8 @@ sub ingest_eprint {
   # 2) Create a bag for this eprint
   my ($bagit_path,$metadata_path) = $eprint->export("Bagit", arkivumid=>$ark_t_id);
 
-  # 3) Post tar file to the bucket
-  my $bucket_path = $self->_bucket_put_eprint($bagit_path);
+  # 3) Post bag to the bucket
+  my $bucket_path = $self->_bucket_put_eprint($bagit_path, $mime_types);
   my $bucket_metadata_path = $bucket_path . "/ark-file-meta.csv";
 
   # 4) Call the ingest endpoint to start the actual ingest - we can point this at the bag "directory"
@@ -384,11 +384,9 @@ sub _bucket_put_eprint {
         my $file_path = $File::Find::name;
 
         # get file size to work out if multi-part upload
+	
         my $file_size = -s $file_path;
         my $rel_path = abs2rel($file_path, $bagit_path);
-
-        # get a key for this file
-        my $ingest_path = $self->param( "datapool" ).$bucket_key_path."/".$rel_path;
 
         # get the mime type
         my $mime = "application/octet-stream";
@@ -406,16 +404,21 @@ sub _bucket_put_eprint {
         }
         elsif( $rel_path =~ m/^data\/documents\/([\d+])\/(.+)$/ )
         {
-          my $pos = $0;
-          my $filename = $1;
+          # first get the mime type for this document
+          my $pos = $1;
+          my $filename = $2;	  
           if( exists $mime_types->{$pos} && exists $mime_types->{$pos}->{$filename} )
           {
             $mime = $mime_types->{$pos}->{$filename};
           }
         }
 
+
+        # get a key for this file
+        my $ingest_path = $self->param( "datapool" ).$bucket_key_path."/".$rel_path;
+
         # create a bucket object for our file
-        my $object = $bucket->object(key=>$ingest_path, content_type=>$mime);
+        my $object = $bucket->object(key=>$ingest_path, content_type=>$mime,);
 
         # do we need to send this as a multiparter?
         my $chunk_threshold = 1 * 1024 * 1024 * 1024; # 1GB

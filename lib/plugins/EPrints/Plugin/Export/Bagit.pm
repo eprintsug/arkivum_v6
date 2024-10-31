@@ -93,6 +93,7 @@ sub output_dataobj
         {
             # and copy the file into the new file dir
             my $filename = $file->get_value( "filename" );
+            my $uri_filename = EPrints::Utils::uri_escape_utf8( $file->get_value( "filename" ) );
             my $fileid = $file->get_value ("fileid");
             my $filesize = $file->get_value("filesize");
             $filename =~ s/\x27/=0027/g;
@@ -118,11 +119,11 @@ sub output_dataobj
             my $ht = $file->get_value( 'hash_type' );
 
             $hash_cache{ "$local_path/$filename" } = $h if $h && $ht && $ht eq "MD5";
-            my $ok = copy($local_path, "$doc_path/$filename"); 
+            my $ok = copy($local_path, "$doc_path/$uri_filename" ); 
             if (! $ok) {# or warn "Copy failed: $!";
                 push @results, $self->_log("Error - COPY failed", "$!", 2);
             } 
-            push @results, $self->_log("Copy", "'$local_path' '$doc_path/$filename' (fileid:$fileid docid:$docid hash:$h filesize:$filesize)", $ok);
+            push @results, $self->_log("Copy", "'$local_path' '$doc_path/$uri_filename' (fileid:$fileid docid:$docid hash:$h filesize:$filesize)", $ok);
         }
     }
 
