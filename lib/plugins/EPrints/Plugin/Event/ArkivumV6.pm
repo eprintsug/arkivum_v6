@@ -197,7 +197,7 @@ sub _remove_bucket_copy {
     my $pos = $doc->value( "pos" );
     foreach my $file ( @{$doc->get_value( "files" )} )
     {
-        my $filename = $file->get_value( "filename" );
+	my $filename = EPrints::Utils::uri_escape_utf8( $file->get_value( "filename" ) );
         push @bucket_keys, $bucket_key . "/data/documents/" . $pos . "/" . $filename;
     }
   }
