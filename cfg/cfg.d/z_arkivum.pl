@@ -18,6 +18,7 @@ $c->{plugins}->{"Storage::ArkivumV6"}->{params}->{bucket_name} = "Bucket Name";
 $c->{plugins}{"Event::ArkivumV6"}{params}{disable} = 0;
 $c->{plugins}{"Storage::ArkivumV6"}{params}{disable} = 0;
 $c->{plugins}{"Screen::ArkivumV6"}{params}{disable} = 0;
+$c->{plugins}{"Screen::Admin::ArkivumImport"}{params}{disable} = 0;
 $c->{plugins}{"Export::Bagit"}{params}{disable} = 0;
 
 $c->{arkivum}->{bagit_version} = '1.0';

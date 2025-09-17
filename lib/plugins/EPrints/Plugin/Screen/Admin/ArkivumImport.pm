@@ -65,7 +65,7 @@ sub action_create_eprint{
 
     my $dataset = $self->{session}->dataset("eprint");
     my $eprint;
-    my $eprint = $dataset->create_dataobj( $epdata );
+    $eprint = $dataset->create_dataobj( $epdata );
 
     return if !defined $eprint;
 
