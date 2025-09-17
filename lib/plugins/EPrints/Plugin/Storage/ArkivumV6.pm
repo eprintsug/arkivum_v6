@@ -8,6 +8,7 @@ use Net::Amazon::S3::Client;
 
 use File::Find;
 use File::Spec::Functions qw(abs2rel);
+use File::Temp qw/ tempfile tempdir /;
 
 use LWP::Authen::OAuth2;
 use Data::Dumper;
@@ -187,6 +188,28 @@ sub _handle_response {
         return decode_json($response->decoded_content);
 }
 
+sub _handle_download {
+        my( $self, $response) = @_;
+        if ( not defined $response ) {
+                $self->_log("Invalid response returned");
+                return;
+        }
+        if ($response->is_error){
+            $self->_log("Error response: ".Dumper($response));
+            return decode_json($response->decoded_content);
+        }
+
+        # write the download to a temporary file and return the details
+        my $arkivum_path = $self->{session}->get_repository->get_conf( "arkivum", "path" );
+        my $temp_dir = tempdir( DIR => $arkivum_path );
+        my $file_path = $temp_dir . "/" . $response->filename;
+        open(my $fh, '>', $file_path) or die "Could not open file '$file_path' $!";
+        print $fh $response->decoded_content;
+        close $fh;
+        return ( $response->filename, $file_path );
+}
+
+
 # Clean endpoints and build api request uri 
 # based on config host and datapool(s)
 sub _build_request_uri {
@@ -259,6 +282,17 @@ sub _arkivum_get_request
 
     return $self->_handle_response($response);
 }
+
+sub _arkivum_get_download
+{
+    my( $self, $endpoint, $file_ref ) = @_;
+
+    my $arkivum = $self->_connect; # returns an LWP::Authen::OAuth2 thingimy-jig
+    my $response = $arkivum->get( $self->_build_request_uri($endpoint, $file_ref) );
+   
+    return $self->_handle_download($response);
+}
+
 
 sub _arkivum_post_request
 {

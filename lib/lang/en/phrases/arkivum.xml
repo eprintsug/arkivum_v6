@@ -297,6 +297,8 @@
 <epp:phrase id="arkivum:archive_mismatch"><br/><p>It looks like there has been a change to this record since it was last ingested into Arkivum. Perhaps you would like to re-ingest this item to Arkivum.</p><epc:pin name="reingest_button"/></epp:phrase>
 
 
+<epp:phrase id="Plugin/Screen/Admin/ArkivumImport:title">Arkivum Import</epp:phrase>
+<epp:phrase id="Plugin/Screen/Admin/ArkivumImport:description">Import files from the repository's Arkivum datapool</epp:phrase>
 
 
 
