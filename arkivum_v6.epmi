@@ -15,6 +15,38 @@
         </file>
         <file>
           <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/ingest_repository</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>bf1fc7cdf7bbfd9381737c3727ab72a7</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1107</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_all_arkivum_transactions</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>c58509747eadadbdc926bf9facfc0642</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>685</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_arkivum_copies</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>51d154b0411c8065480e79a7f5675beb</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1392</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_old_arkivum_copies</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>b0e307a4024db548e0c5ea62c43abe8c</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1402</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/bin/swill_bucket</filename>
           <mime_type>text/x-perl</mime_type>
           <hash>906047904b1fd6c6b4c38d0ba093e0dc</hash>
@@ -25,17 +57,17 @@
           <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
           <mime_type>text/plain</mime_type>
-          <hash>7fdde8861fee1cd33eff009a3e42e8b5</hash>
+          <hash>26c883273d7b3deffd78da6edb3d7517</hash>
           <hash_type>MD5</hash_type>
-          <filesize>7704</filesize>
+          <filesize>7904</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
           <filename>lang/en/phrases/arkivum.xml</filename>
           <mime_type>application/xml</mime_type>
-          <hash>e618f8716b84bea7e86beda264b797f3</hash>
+          <hash>088963d7ebeb157ba1ac5bd002d3c1ec</hash>
           <hash_type>MD5</hash_type>
-          <filesize>18113</filesize>
+          <filesize>18452</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -49,9 +81,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Event/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>203ce4aeeb9cdc548404b8e2c2938c92</hash>
+          <hash>f6619fdaaffec440f49d00f255269872</hash>
           <hash_type>MD5</hash_type>
-          <filesize>9731</filesize>
+          <filesize>9434</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -60,6 +92,14 @@
           <hash>4ff43ae05c6e32561fd351ecf3f1e2bc</hash>
           <hash_type>MD5</hash_type>
           <filesize>16786</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>plugins/EPrints/Plugin/Screen/Admin/ArkivumImport.pm</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>175181c86d085d4b48d5d729cc2ff58b</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>8409</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -73,17 +113,17 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>1dcf537a2e08c002bef14014bbe3874f</hash>
+          <hash>b5fcc4fafa0fd05b6b1889ec0af43225</hash>
           <hash_type>MD5</hash_type>
-          <filesize>14685</filesize>
+          <filesize>17237</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
           <filename>static/style/auto/arkivum_v6.css</filename>
           <mime_type>text/x-asm</mime_type>
-          <hash>3b545b619fc8bad38cb86273b9682298</hash>
+          <hash>38985fc90dae02c71f711fb39595fda1</hash>
           <hash_type>MD5</hash_type>
-          <filesize>3894</filesize>
+          <filesize>4520</filesize>
         </file>
       </files>
       <mime_type>text/x-asm</mime_type>
@@ -92,7 +132,7 @@
       <content>install</content>
     </document>
   </documents>
-  <version>0.7</version>
+  <version>0.8</version>
   <creators>
     <item>
       <name>

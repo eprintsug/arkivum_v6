@@ -195,3 +195,42 @@ li.ep_arkivum_view_tab {
     font-size: 16px;
     font-weight: bold;
 }
+
+/*** Arkivum Importer ***/
+.arkivum_available
+{
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.ep_report_row{
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #c6c7c8;
+    border-left: 5px solid #00D48C;
+}
+
+.ep_report_row .btn{
+    display: block;
+    margin-bottom: 5px;
+}
+
+dt.ep_arkivum_field{
+    float: left;
+    margin-right: 5px;    
+}
+
+.ep_arkivum_filename{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.ep_report_row .arkivum-import-local{
+    display: inline-block;
+}
+.ep_report_row .remaining{
+    display: inline-block;
+    margin-left: 5px;
+}

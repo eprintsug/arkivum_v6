@@ -76,6 +76,54 @@ sub monitor {
   }
   
 }
+
+sub retrieve
+{
+    my( $self, $fileobj, $sourceid, $offset, $n, $f ) = @_;
+
+    print STDERR "fileobj....$fileobj\n";
+    print STDERR "sourceid...$sourceid\n";
+    print STDERR "offset.....$offset\n";
+    print STDERR "n..........$n\n";
+    print STDERR "f..........$f\n";
+
+    # TODO:
+    # 1) Ping Arkivum, check file exists and get the size
+    # 2) Depending on size we could download a local copy of the file
+    #    We would need to know how much space we have available and
+    #    keep a rolling cap of available space, in case someone requests something similar
+    # 3) Or.... we could download it to bucket ready for retrieval
+    # 4) retrieve in the meantime should redirect the user to a holding page telling them what's happening
+
+    return 0;
+
+    #    return 0 if !$self->open_read( $fileobj, $sourceid, $f );
+    #my( $path, $fn ) = $self->_filename( $fileobj, $sourceid );
+    #
+    #return undef if !defined $path;
+    #
+    #my $fh = $self->{_fh}->{$fileobj};
+    #
+    #my $rc = 1;
+    #
+    #sysseek($fh, $offset, SEEK_SET);
+    #
+    #my $buffer;
+    #my $bsize = $n > 65536 ? 65536 : $n;
+    #while(sysread($fh,$buffer,$bsize))
+    #{
+    #    $rc &&= &$f($buffer);
+    #    last unless $rc;
+    #    $n -= $bsize;
+    #    $bsize = $n if $bsize > $n;
+    #}
+    #
+    #$self->close_read( $fileobj, $sourceid, $f );
+
+    #return $rc;
+}
+
+
 sub _monitor_ingest {
   my ($self, $ingest_id) = @_;
 
@@ -236,7 +284,7 @@ sub _file_path_to_arkivum_path {
     my $archive_root = $self->{session}->get_repository->get_conf( "archiveroot" );
    
     # Get the configured mount path for the Arkivum storage and append the repo id to it
-    my $datapool = $self->param( "datapool" );
+    my $datapool = $self->param( "datapool_path" );
 
     $file_path =~ s#$archive_root#$datapool#;
 

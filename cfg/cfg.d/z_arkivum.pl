@@ -4,7 +4,8 @@ use EPrints::DataObj::Arkivum;
 # ARKIVUM ACCESS
 ########################################
 $c->{plugins}->{"Storage::ArkivumV6"}->{params}->{api_host} = "API Host URL";
-$c->{plugins}->{"Storage::ArkivumV6"}->{params}->{datapool} = "Datapool ID";
+$c->{plugins}->{"Storage::ArkivumV6"}->{params}->{datapool} = "Datapool Name";
+$c->{plugins}->{"Storage::ArkivumV6"}->{params}->{datapool_path} = "Datapool Path";
 $c->{plugins}->{"Storage::ArkivumV6"}->{params}->{token_url} = "Arkivum Token URL";
 $c->{plugins}->{"Storage::ArkivumV6"}->{params}->{client_id} = "Client ID";
 $c->{plugins}->{"Storage::ArkivumV6"}->{params}->{client_secret} = "Client Secret";
@@ -24,6 +25,7 @@ $c->{plugins}{"Export::Bagit"}{params}{disable} = 0;
 $c->{arkivum}->{bagit_version} = '1.0';
 $c->{arkivum}->{bagit_encoding} = 'UTF-8';
 $c->{arkivum}->{path} = '/var/tmp/arkivum/test';
+$c->{arkivum}->{app_mount} = '/opt/eprints3';
 
 ### Arkivum Namespace Identifiers
 $c->{arkivum}->{identifier_namespace} = "cs";

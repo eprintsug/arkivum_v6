@@ -234,23 +234,13 @@ sub _make_copy {
 	  foreach my $file (@{$doc->get_value( "files" )})
 	  {
 		    # Get/construct URI for this file so we can find it within the Arkivum API
-		    my $uri = $self->_get_arkivum_uri($doc, $file, $ark_t->id, $storage->param("api_host"), $storage->param("datapool"));
+            my $uri = $storage->get_arkivum_path($doc, $file, $ark_t->id);
 
 		    # Create a file->copy with the Storage::ArkivunV6 pluginid now we know that this file is safely in Arkivum
-        $file->add_plugin_copy( $storage, $uri );
-        $file->commit();
+            $file->add_plugin_copy( $storage, $uri );
+            $file->commit();
 	  }
   }
-}
-
-sub _get_arkivum_uri {
-
-  my ($self, $doc, $file, $ark_t_id, $arkivum_host, $datapool) = @_;
-
-  my $arkivum_uri = $arkivum_host."/a6/files/".$datapool."/".$doc->value("eprintid")."_".$ark_t_id."/documents/".$doc->value("pos")."/".$file->value("filename");
-
-  return $arkivum_uri;
-
 }
 
 sub _get_event {

@@ -300,6 +300,6 @@
 <epp:phrase id="Plugin/Screen/Admin/ArkivumImport:title">Arkivum Import</epp:phrase>
 <epp:phrase id="Plugin/Screen/Admin/ArkivumImport:description">Import files from the repository's Arkivum datapool</epp:phrase>
 
-
+<epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_available">Space Available: <epc:pin name="available"/></epp:phrase>
 
 </epp:phrases>
