@@ -26,6 +26,7 @@ $c->{arkivum}->{bagit_version} = '1.0';
 $c->{arkivum}->{bagit_encoding} = 'UTF-8';
 $c->{arkivum}->{path} = '/var/tmp/arkivum/test';
 $c->{arkivum}->{app_mount} = '/opt/eprints3';
+$c->{arkivum}->{max_local_size} = 5000000;
 
 ### Arkivum Namespace Identifiers
 $c->{arkivum}->{identifier_namespace} = "cs";

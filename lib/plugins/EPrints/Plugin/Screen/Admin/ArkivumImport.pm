@@ -55,7 +55,7 @@ sub action_create_eprint{
 
     # download the file? (do we add a separate action that allows for a document to be created
     # but using the arkivum storage plugin to keep it offsite? Yes quite probably!
-    my $uri = "a6/files/".$self->{session}->param( "path" );
+    my $uri = "a6/files".$self->{session}->param( "path" );
     my $storage = $repo->plugin("Storage::ArkivumV6");
 
     # create the new eprint
@@ -81,6 +81,7 @@ sub action_create_eprint{
 
     my $file = $doc->create_subdataobj( "files", {
         filename => $filename,
+        filesize => $self->{session}->param( "size" ),
     });
 
     # Create a file->copy with the Storage::ArkivunV6 pluginid now we have our local EPrints version
@@ -101,7 +102,7 @@ sub action_create_eprint_with_local{
 
     my $repo = $self->repository;
 
-    my $uri = "a6/files/".$self->{session}->param( "path" );
+    my $uri = "a6/files".$self->{session}->param( "path" );
     my $storage = $repo->plugin("Storage::ArkivumV6");
     my ( $filename, $filepath ) = $storage->_arkivum_get_download($uri, undef);
 

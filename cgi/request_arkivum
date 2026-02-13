@@ -1,0 +1,14 @@
+use EPrints;
+use strict;
+
+my $session = new EPrints::Session();
+exit( 1 ) unless( defined $session );
+
+EPrints::ScreenProcessor->process(
+    session => $session,
+    url => $session->config( "rel_cgipath" )."/request_arkivum",
+    screenid => "Public::RequestArkivum",
+);
+$session->terminate;
+
+exit;

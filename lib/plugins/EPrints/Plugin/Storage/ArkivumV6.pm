@@ -10,6 +10,8 @@ use File::Find;
 use File::Spec::Functions qw(abs2rel);
 use File::Temp qw/ tempfile tempdir /;
 
+use Fcntl qw( SEEK_SET :DEFAULT );
+
 use LWP::Authen::OAuth2;
 use Data::Dumper;
 
@@ -81,46 +83,42 @@ sub retrieve
 {
     my( $self, $fileobj, $sourceid, $offset, $n, $f ) = @_;
 
-    print STDERR "fileobj....$fileobj\n";
-    print STDERR "sourceid...$sourceid\n";
-    print STDERR "offset.....$offset\n";
-    print STDERR "n..........$n\n";
-    print STDERR "f..........$f\n";
+    my $repo = $self->{session}->get_repository;
+    my $doc = $fileobj->get_parent;
 
-    # TODO:
-    # 1) Ping Arkivum, check file exists and get the size
-    # 2) Depending on size we could download a local copy of the file
-    #    We would need to know how much space we have available and
-    #    keep a rolling cap of available space, in case someone requests something similar
-    # 3) Or.... we could download it to bucket ready for retrieval
-    # 4) retrieve in the meantime should redirect the user to a holding page telling them what's happening
+    # get the file size....
+    my $filesize = $fileobj->value( "filesize" );
 
-    return 0;
+    if( $filesize < $repo->config( "arkivum", "max_local_size" ) )
+    {
+        # download...!
+        my $storage = $repo->plugin("Storage::ArkivumV6");
+        my ( $filename, $filepath ) = $storage->_arkivum_get_download($sourceid, undef);
 
-    #    return 0 if !$self->open_read( $fileobj, $sourceid, $f );
-    #my( $path, $fn ) = $self->_filename( $fileobj, $sourceid );
-    #
-    #return undef if !defined $path;
-    #
-    #my $fh = $self->{_fh}->{$fileobj};
-    #
-    #my $rc = 1;
-    #
-    #sysseek($fh, $offset, SEEK_SET);
-    #
-    #my $buffer;
-    #my $bsize = $n > 65536 ? 65536 : $n;
-    #while(sysread($fh,$buffer,$bsize))
-    #{
-    #    $rc &&= &$f($buffer);
-    #    last unless $rc;
-    #    $n -= $bsize;
-    #    $bsize = $n if $bsize > $n;
-    #}
-    #
-    #$self->close_read( $fileobj, $sourceid, $f );
+        $filename = EPrints->system->sanitise( $filename );
+        $filename = (split '/', $filename)[-1];
+        open(my $arkivum_fh, "<", $filepath) or return undef;
 
-    #return $rc;
+        $fileobj->set_file( $arkivum_fh, $filesize );
+        my $local_storage = $repo->plugin("Storage::Local");
+        $fileobj->add_plugin_copy( $local_storage, $filename ); 
+
+        # adding the file deletes the original Arkivum storage copy
+        # so re-add
+        $fileobj->add_plugin_copy( $storage, $sourceid );
+
+        $fileobj->commit;
+
+        # and return using the local copy!
+        return $local_storage->retrieve( $fileobj, $filename, 0, $filesize, $f );
+    }
+    else # redirect to ask for permission - admin can then trigger the arkivum to bucket process...
+    {       
+        $repo->redirect( "/cgi/request_arkivum?docid=".$doc->id );
+    }
+       
+    return 1;
+
 }
 
 
