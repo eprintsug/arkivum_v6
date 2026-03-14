@@ -67,16 +67,16 @@ sub ingest_eprint {
 
 sub monitor {
   my ($self, $transaction_to_monitor, $transaction_id) = @_;
-  
+
   use Switch;
 
   switch ($transaction_to_monitor) {
     case /^ingest/       { return $self->_monitor_ingest($transaction_id); }
     case /^export/       { return $self->_monitor_export($transaction_id); }
-    case /^preservation/ { return $self->_monitor_preservation($transaction_id); } 
+    case /^preservation/ { return $self->_monitor_preservation($transaction_id); }
     else                 { $self->_log("Transaction to monitor not found: $transaction_to_monitor"); return undef; }
   }
-  
+
 }
 
 sub retrieve
@@ -101,7 +101,7 @@ sub retrieve
 
         $fileobj->set_file( $arkivum_fh, $filesize );
         my $local_storage = $repo->plugin("Storage::Local");
-        $fileobj->add_plugin_copy( $local_storage, $filename ); 
+        $fileobj->add_plugin_copy( $local_storage, $filename );
 
         # adding the file deletes the original Arkivum storage copy
         # so re-add
@@ -113,10 +113,10 @@ sub retrieve
         return $local_storage->retrieve( $fileobj, $filename, 0, $filesize, $f );
     }
     else # redirect to ask for permission - admin can then trigger the arkivum to bucket process...
-    {       
+    {
         $repo->redirect( "/cgi/request_arkivum?docid=".$doc->id );
     }
-       
+
     return 1;
 
 }
@@ -126,7 +126,7 @@ sub _monitor_ingest {
   my ($self, $ingest_id) = @_;
 
   return $self->_arkivum_get_request("/ingest/$ingest_id/report", undef);
- 
+
 }
 # Delete the local copy and request deletion of Arkivum copy
 # Based on Storage::Local::delete with insert for Arkivum API calls
@@ -188,7 +188,7 @@ sub _connect {
 
 sub _authenticate {
   my ($self) = @_;
- 
+
   my $client_id = $self->param( "client_id" );
   # Constructor
   my $oauth2 = LWP::Authen::OAuth2->new(
@@ -199,7 +199,7 @@ sub _authenticate {
     # Optional hook, but recommended.
     #    save_tokens => \&self->_save_tokens,
     #    save_tokens_args => [ $dbh ],
- 
+
     # This is for when you have tokens from last time.
     #token_string => $token_string,
   );
@@ -209,15 +209,15 @@ sub _authenticate {
 }
 sub _save_tokens {
   my ($token_string) = @_;
-  
+
   print STDERR "TOKEN STRING: ".$token_string."\n";
 }
 ##########################################
 # Util methods for arkivum api interaction
 ##########################################
 
-# Do some consistent generic response handling if all is well, 
-# pass decoded and json parsed content back to the caller for 
+# Do some consistent generic response handling if all is well,
+# pass decoded and json parsed content back to the caller for
 # further processing
 sub _handle_response {
         my( $self, $response) = @_;
@@ -256,7 +256,7 @@ sub _handle_download {
 }
 
 
-# Clean endpoints and build api request uri 
+# Clean endpoints and build api request uri
 # based on config host and datapool(s)
 sub _build_request_uri {
 
@@ -271,8 +271,8 @@ sub _build_request_uri {
     return $req_uri;
 }
 
-# returns a version of the file path that can be used 
-# to store the file in an easily addressable location 
+# returns a version of the file path that can be used
+# to store the file in an easily addressable location
 # in arkivum
 sub _file_path_to_arkivum_path {
 
@@ -280,7 +280,7 @@ sub _file_path_to_arkivum_path {
 
     # Get the root path for repository as it would be on local storage
     my $archive_root = $self->{session}->get_repository->get_conf( "archiveroot" );
-   
+
     # Get the configured mount path for the Arkivum storage and append the repo id to it
     my $datapool = $self->param( "datapool_path" );
 
@@ -309,7 +309,7 @@ sub _documents_path {
 
     # Get the root path for repository as it would be on local storage
     my $archive_root = $self->{session}->get_repository->get_conf( "archiveroot" );
-   
+
     # Get the configured mount path for the Arkivum storage and append the repo id to it
     my $documents_path = $self->{session}->get_repository->get_conf( "documents_path" );
 
@@ -325,7 +325,6 @@ sub _arkivum_get_request
 
     my $arkivum = $self->_connect; # returns an LWP::Authen::OAuth2 thingimy-jig
     my $response = $arkivum->get( $self->_build_request_uri($endpoint, $file_ref), 'Content_Type' => 'application/json' );
-
     return $self->_handle_response($response);
 }
 
@@ -335,7 +334,7 @@ sub _arkivum_get_download
 
     my $arkivum = $self->_connect; # returns an LWP::Authen::OAuth2 thingimy-jig
     my $response = $arkivum->get( $self->_build_request_uri($endpoint, $file_ref) );
-   
+
     return $self->_handle_download($response);
 }
 
@@ -345,7 +344,8 @@ sub _arkivum_post_request
     my( $self, $endpoint, $file_ref, $data ) = @_;
 
     my $arkivum = $self->_connect; # returns an LWP::Authen::OAuth2 thingimy-jig
-    my $response = $arkivum->post( $self->_build_request_uri($endpoint, $file_ref), 'Content_Type' => 'application/json' );
+
+    my $response = $arkivum->post( $self->_build_request_uri($endpoint, $file_ref), 'Content_Type' => 'application/json', Content => $data );
 
     return $self->_handle_response($response);
 }
@@ -394,11 +394,11 @@ sub _get_ingest_bucket {
   return $self->_handle_bucket_error($client) if ! $client;
 
   my $bucket = $client->bucket( name => $self->param("bucket_name") );
-  #my $bucket = $s3->bucket($self->param("bucket_name"),region=>$self->param("bucket_region")); 
+  #my $bucket = $s3->bucket($self->param("bucket_name"),region=>$self->param("bucket_region"));
   return $self->_handle_bucket_error($bucket) if $client->{s3}->err;
 
   return $bucket;
-   
+
 }
 
 ### Un-used Function ###
@@ -428,10 +428,10 @@ sub _tar_bag {
   $self->_log( "And write to $bagit_zip_path" );
   $self->_log( "And zip it this time!!!" );
   $tar->write( $bagit_zip_path, 1 );
-  
+
   # and tidy away the dir used by Tar::Wrapper to make the tar
   $tar = undef;
- 
+
   # Move the compressed bagit file to a cool sounding filename
   use File::Copy;
   my $bagit_cool_name = substr($bagit_path,0,-4);
@@ -464,7 +464,7 @@ sub _bucket_put_eprint {
         my $file_path = $File::Find::name;
 
         # get file size to work out if multi-part upload
-	
+
         my $file_size = -s $file_path;
         my $rel_path = abs2rel($file_path, $bagit_path);
 
@@ -486,7 +486,7 @@ sub _bucket_put_eprint {
         {
           # first get the mime type for this document
           my $pos = $1;
-          my $filename = $2;	  
+          my $filename = $2;
           if( exists $mime_types->{$pos} && exists $mime_types->{$pos}->{$filename} )
           {
             $mime = $mime_types->{$pos}->{$filename};
@@ -539,7 +539,7 @@ sub _bucket_put_eprint {
             part_numbers => \@part_numbers,
           );
         }
-  
+
         return $self->_handle_bucket_error($response) if $self->{s3_client}->{s3}->err;
     },
     $bagit_path
@@ -564,7 +564,7 @@ sub _bucket_put_metadata {
 
   # Turn the local file path into an address we can use in bucket (and beyond)
   my $ingest_path=$self->param( "datapool" ).$bucket_metadata_path;
-   
+
   my $object = $bucket->object(key=>$ingest_path,content_type=>'text/xml');
   my $response = $object->put_filename($metadata_path);
 
@@ -584,7 +584,7 @@ sub _bucket_delete_request {
 
   my $object = $bucket->object(key=>$bucket_key);
 
-  if ($object->exists) { 
+  if ($object->exists) {
     print STDERR "Removing object from bucket: ".$object->uri."\n";
     $object->delete;
   }
@@ -606,4 +606,3 @@ sub _read_chunk {
     read($fh, my $data, $size);
     return $data;
 }
-

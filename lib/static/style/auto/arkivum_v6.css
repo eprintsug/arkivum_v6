@@ -227,6 +227,11 @@ dt.ep_arkivum_field{
     font-weight: bold;
 }
 
+.ep_arkivum_directory{
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .ep_report_row .arkivum-import-local{
     display: inline-block;
 }

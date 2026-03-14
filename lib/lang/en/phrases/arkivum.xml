@@ -302,4 +302,7 @@
 
 <epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_available">Space Available: <epc:pin name="available"/></epp:phrase>
 
+<epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_in_dir">In Directory: <epc:pin name="dir"/></epp:phrase>
+<epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_back_to_root"><a href="/cgi/users/home?screen=Admin%3A%3AArkivumImport">Back to top directory</a></epp:phrase>
+
 </epp:phrases>

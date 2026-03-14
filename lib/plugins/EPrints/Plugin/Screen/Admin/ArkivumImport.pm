@@ -57,13 +57,19 @@ sub action_create_eprint{
     # but using the arkivum storage plugin to keep it offsite? Yes quite probably!
     my $uri = "a6/files".$self->{session}->param( "path" );
     my $storage = $repo->plugin("Storage::ArkivumV6");
-
+    my $response = $self->get_arkivum_file_metadata( $storage, $self->{session}->param( "path" ) );
+    print STDERR Dumper($response)."\n";
     # create the new eprint
     my $epdata = {
         eprint_status => "inbox",
         userid => $self->repository->current_user->id,
     };
     $epdata->{title} = "Arkivum Import";
+
+    if( $repo->config( "arkivum", "use_recollect_workflow" ) )
+    {
+        $epdata->{type} = 'data_collection';
+    }
 
     my $dataset = $self->{session}->dataset("eprint");
     my $eprint;
@@ -113,6 +119,11 @@ sub action_create_eprint_with_local{
     };
     $epdata->{title} = "Arkivum Import with Local";
 
+    if( $repo->config( "arkivum", "use_recollect_workflow" ) )
+    {
+        $epdata->{type} = 'data_collection';
+    }
+
     my $dataset = $self->{session}->dataset("eprint");
     my $eprint;
     $eprint = $dataset->create_dataobj( $epdata );
@@ -136,6 +147,28 @@ sub action_create_eprint_with_local{
     $self->{processor}->{dataobj_id} = $self->{processor}->{eprintid} = $eprint->get_id;
 
     $self->{processor}->{screenid} = "EPrint::Edit";
+}
+
+sub get_arkivum_file_metadata {
+
+  my( $self, $storage, $file_path ) = @_;
+
+  my $dp_path = $storage->param("datapool_path");
+
+  $file_path =~ s#^/$dp_path##g;
+
+  my $query = {
+    "types" => ["F"],
+    "datapools" => [ $storage->param("datapool")],
+    "fileClasses" => ["REGULAR"],
+    "queryStringQuery" => "$file_path", #This will currently return lots of vaguely correct results when we want one
+    "page"=> 1,
+    "pageSize"=> 1,
+    #  "content"=> "string",
+  };
+
+  return $storage->_arkivum_post_request("es/metadata/search/string/query", undef, $self->to_json( $query ) );
+
 }
 
 sub allow_export { shift->can_be_viewed }
@@ -171,7 +204,7 @@ sub export
         return $self->$f;
     }
 
-	return $self->SUPER::export
+        return $self->SUPER::export
 }
 
 sub ajax_arkivum
@@ -184,11 +217,12 @@ sub ajax_arkivum
 
     my @paths = $repo->param( "arkivum" );
     my $storage = $repo->plugin("Storage::ArkivumV6");
-    
+
     foreach my $path ( @paths )
     {
         my $file_info = $storage->_arkivum_get_request("a6/api/2/files/fileInfo/$path", undef);
         push @{$json->{data}}, {
+            is_directory => $file_info->{directory},
             path => $file_info->{path},
             name => $file_info->{name},
             created => $file_info->{createdDate},
@@ -214,36 +248,50 @@ sub render
     $frag->appendChild( my $available_div = $repo->make_element( 'div', class => "arkivum_available" ) );
     $available_div->appendChild( $self->html_phrase( "arkivum_available", available => $repo->make_text( $self->{available_gb} ) ) );
 
+    if( $self->{session}->param("directory_name") )
+    {
+      $frag->appendChild( my $in_dir_div = $repo->make_element( 'div', class => "arkivum_available" ) );
+      $in_dir_div->appendChild( $self->html_phrase( "arkivum_in_dir", dir => $repo->make_text( $self->{session}->param("directory_name" ) ) ) );
+      $frag->appendChild( my $back_link = $repo->make_element( 'p' ) );
+      $back_link->appendChild( $self->html_phrase( "arkivum_back_to_root" ) );
+    }
+
     # first get the Arkivum data
     my $storage = $repo->plugin("Storage::ArkivumV6");
     my $datapool = $storage->param("datapool_path");
-    my $files = $storage->_arkivum_get_request("a6/files/$datapool", undef);
+    my $import_sub_path = $repo->config("arkivum", "import_sub_path");
+    my $files_endpoint = "a6/files/$datapool/$import_sub_path";
+    if($self->{session}->param("path"))
+    {
+        my $path = $self->{session}->param("path");
+        $files_endpoint = "a6/files$path";
+    }
+    my $files = $storage->_arkivum_get_request($files_endpoint, undef);
 
     my %arkivum_files = ();
     foreach my $file ( @{$files->{fileProperties}} )
     {
-        next if $file->{directory} == 1;
+        #  print STDERR Dumper($file)."\n";
+        #next if $file->{directory} == 1;
         $arkivum_files{$file->{path}} = $file->{lastModified};
     }
-    
-	my @sorted_files;
+
+        my @sorted_files;
     foreach my $file (sort { $arkivum_files{$b} cmp $arkivum_files{$a} } keys %arkivum_files )
     {
-		push @sorted_files, $file;
+                push @sorted_files, $file;
     }
-	my $json = encode_json \@sorted_files;
+        my $json = encode_json \@sorted_files;
 
-	my $container_id = "arkivum_import";
-	$frag->appendChild( $repo->make_element( 'div', id => $container_id ) );
+        my $container_id = "arkivum_import";
+        $frag->appendChild( $repo->make_element( 'div', id => $container_id ) );
 
-	my $url = $repo->current_url( host => 1 );
+        my $url = $repo->current_url( host => 1 );
     my $parameters = URI->new;
     $parameters->query_form(
         $self->hidden_bits,
     );
     $parameters = $parameters->query;
-
-
 
     my $prefix = "arkivum";
 
@@ -260,17 +308,17 @@ document.observe("dom:loaded", function() {
 });
 EOJ
 
-	return $frag
+        return $frag
 }
 
 sub to_json
 {
-	my( $self, $object ) = @_;
+        my( $self, $object ) = @_;
 
     return "" if( !defined $object );
 
-	# UTF-8 issues:
-	#   return JSON->new->utf8(1)->encode( $object );
+        # UTF-8 issues:
+        #   return JSON->new->utf8(1)->encode( $object );
 
     if( ref( $object ) eq 'HASH' )
         {
