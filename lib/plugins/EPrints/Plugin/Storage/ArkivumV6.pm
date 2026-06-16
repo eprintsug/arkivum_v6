@@ -188,8 +188,11 @@ sub _connect {
 
 sub _authenticate {
   my ($self) = @_;
-
+    print STDERR "_authenticate\n";
   my $client_id = $self->param( "client_id" );
+  print STDERR "client_id....$client_id\n";
+  print STDERR "secret...".$self->param( "client_secret" ) . "\n";
+  print STDERR "token...".$self->param( "token_url" )."\n";
   # Constructor
   my $oauth2 = LWP::Authen::OAuth2->new(
     client_id => $client_id,
@@ -205,6 +208,7 @@ sub _authenticate {
   );
 
   $oauth2->request_tokens(code => "unused_pretend_code", grant_type => "client_credentials");
+  print STDERR "return oatuh2....$oauth2\n";
   return $oauth2;
 }
 sub _save_tokens {
@@ -606,3 +610,4 @@ sub _read_chunk {
     read($fh, my $data, $size);
     return $data;
 }
+

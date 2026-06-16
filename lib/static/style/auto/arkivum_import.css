@@ -1,0 +1,151 @@
+  body {
+      font-family: monospace;
+      background: #fff;
+      color: #222;
+      padding: 2rem;
+      margin: 0;
+    }
+
+    .mi {
+      font-family: 'Material Icons';
+      font-size: 16px;
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .tree-wrap {
+      padding: 1rem 0;
+      font-size: 13px;
+    }
+
+    .tree-node {
+      user-select: none;
+    }
+
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #222;
+    }
+
+    .tree-row:hover {
+      background: #f5f5f5;
+    }
+
+    .tree-arrow {
+      font-size: 10px;
+      width: 12px;
+      text-align: center;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+      color: #aaa;
+    }
+
+    .tree-arrow.open {
+      transform: rotate(90deg);
+    }
+
+    .tree-arrow.leaf {
+      visibility: hidden;
+    }
+
+    .tree-icon {
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    .tree-icon.mi {
+      font-size: 16px;
+    }
+
+    /* Material icon colours by type */
+    .mi.folder       { color: #f5a623; }
+    .mi.folder-open  { color: #f5a623; }
+    .mi.pdf          { color: #e53935; }
+    .mi.image        { color: #43a047; }
+    .mi.code         { color: #1e88e5; }
+    .mi.text         { color: #888;    }
+    .mi.generic      { color: #aaa;    }
+
+    .tree-label {
+      color: #222;
+    }
+
+    .tree-label.dir {
+      font-weight: bold;
+    }
+
+    .tree-ext {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .tree-children {
+      margin-left: 20px;
+      border-left: 1px solid #ddd;
+      padding-left: 4px;
+    }
+
+    .tree-children.collapsed {
+      display: none;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .toolbar button {
+      font-size: 12px;
+      padding: 4px 10px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .toolbar button:hover {
+      background: #f5f5f5;
+    }
+
+    .toggle-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: #aaa;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .tree-row.selected {
+      background: #e3f0ff; /* or whatever fits your theme */
+    }
+
+    .tree-check {
+      flex-shrink: 0;
+      cursor: pointer;
+    }

@@ -207,32 +207,78 @@ sub export
         return $self->SUPER::export
 }
 
-sub ajax_arkivum
+sub ajax_arkivum_file
 {
     my( $self ) = @_;
 
     my $repo = $self->repository;
+    print STDERR "ajax_arkivum_file\n";
 
-    my $json = { data => [] };
+    my $json = {};
 
-    my @paths = $repo->param( "arkivum" );
+    my $path = $repo->param( "path" );
+
+    #    my @paths = $repo->param( "arkivum" );
     my $storage = $repo->plugin("Storage::ArkivumV6");
 
-    foreach my $path ( @paths )
-    {
+    #foreach my $path ( @paths )
+    #{
         my $file_info = $storage->_arkivum_get_request("a6/api/2/files/fileInfo/$path", undef);
-        push @{$json->{data}}, {
-            is_directory => $file_info->{directory},
+        $json = {
+            type => "file",
             path => $file_info->{path},
             name => $file_info->{name},
             created => $file_info->{createdDate},
             size => $file_info->{size},
             available => $self->{available} * 1024,
         };
-    }
+        #}
 
     print $self->to_json( $json );
 }
+
+# ajax call to get the contents of our starting directory/any sub directories
+sub ajax_arkivum_dir
+{
+    my( $self ) = @_;
+
+    my $repo = $self->repository;
+    print STDERR "ajax_arkivum_dir\n";
+
+    # first get the Arkivum data
+    my $storage = $repo->plugin("Storage::ArkivumV6");
+    print STDERR "we have storage....$storage\n";
+    my $datapool = $storage->param("datapool_path");
+    my $dir = $repo->param( "path" );
+    print STDERR "get request for dir....$dir\n";
+    my $files = $storage->_arkivum_get_request($dir, undef);
+    print STDERR "files....".Dumper($files)."\n";
+    my %arkivum_files = ();
+    foreach my $file ( @{$files->{fileProperties}} )
+    {
+       $arkivum_files{$file->{path}}{lastModified} = $file->{lastModified};
+       $arkivum_files{$file->{path}}{size} = $file->{size};
+       $arkivum_files{$file->{path}}{md5sum} = $file->{md5};
+       $arkivum_files{$file->{path}}{path} = $file->{path};
+       if( $file->{directory} )
+       {
+           $arkivum_files{$file->{path}}{type} = "dir";
+       }
+       else
+       {
+           $arkivum_files{$file->{path}}{type} = "file";
+       }
+    }
+
+    my @sorted_files;
+    foreach my $file (sort { $arkivum_files{$b}{lastModified} cmp $arkivum_files{$a}{lastModified} } keys %arkivum_files )
+    {
+        push @sorted_files, $arkivum_files{$file};
+    }
+
+    print $self->to_json( \@sorted_files );
+}
+
 
 sub render
 {
@@ -248,6 +294,7 @@ sub render
     $frag->appendChild( my $available_div = $repo->make_element( 'div', class => "arkivum_available" ) );
     $available_div->appendChild( $self->html_phrase( "arkivum_available", available => $repo->make_text( $self->{available_gb} ) ) );
 
+=comment
     if( $self->{session}->param("directory_name") )
     {
       $frag->appendChild( my $in_dir_div = $repo->make_element( 'div', class => "arkivum_available" ) );
@@ -255,6 +302,84 @@ sub render
       $frag->appendChild( my $back_link = $repo->make_element( 'p' ) );
       $back_link->appendChild( $self->html_phrase( "arkivum_back_to_root" ) );
     }
+=cut
+
+    # set up a space where we're going to display our tree of Arkivum contents
+    my $container_id = "arkivum_import";
+    $frag->appendChild( my $wrap = $repo->make_element( 'div', class => "tree-wrap" ) );
+    $wrap->appendChild( my $toolbar = $repo->make_element( 'div', class => "toolbar" ) );
+    $toolbar->appendChild( my $button = $repo->make_element( 'button', onclick => "expandAll()" ) );
+    $toolbar->appendChild( my $button = $repo->make_element( 'button', onclick => "collapseAll()" ) );
+
+    $wrap->appendChild( $repo->make_element( 'div', id => $container_id ) );
+
+=comment
+
+  <div class="tree-wrap">
+    <div class="toolbar">
+      <button onclick="expandAll()">Expand all</button>
+      <button onclick="collapseAll()">Collapse all</button>
+      <div class="toggle-wrap">
+        <label for="icon-toggle">Material icons</label>
+        <input type="checkbox" id="icon-toggle" checked onchange="setIconMode(this.checked)" />
+      </div>
+    </div>
+    <div id="tree-root"></div>
+  </div>
+
+=cut
+
+    # build our initial query parth, probably direct-upoad
+        my $storage = $repo->plugin("Storage::ArkivumV6");
+    my $datapool = $storage->param("datapool_path");
+    my $import_sub_path = $repo->config("arkivum", "import_sub_path");
+    my $files_endpoint = "$datapool/$import_sub_path";
+    if($self->{session}->param("path"))
+    {
+        my $path = $self->{session}->param("path");
+        $files_endpoint = "$path";
+    }
+
+    my $url = $repo->current_url( host => 1 );
+    my $parameters = URI->new;
+    $parameters->query_form(
+        $self->hidden_bits,
+    );
+    $parameters = $parameters->query;
+
+    # set  up the Ajax Arkivum loader
+    #    $frag->appendChild( $repo->make_javascript( <<"EOJ" ) );
+    #document.observe("dom:loaded", function() {
+    #var data = new EPrints_Screen_Arkivum_Loader( {
+    #    path: '$files_endpoint',
+    #    url: '$url',
+    #    parameters: '$parameters',
+    #    container_id: '$container_id',
+    #} ).get_arkivum_dir();
+    #console.log(data);
+    #});
+    #EOJ
+    $frag->appendChild( $repo->make_javascript( <<"EOJ" ) );
+document.observe("dom:loaded", function() {
+    var data = new EPrints_Screen_Arkivum_Loader( {
+        path: '$files_endpoint',
+        url: '$url',
+        parameters: '$parameters',
+        container_id: '$container_id',
+    } );
+});
+EOJ
+
+        return $frag
+}
+
+=comment
+not here... in the javascript
+sub load_arkivum_directory_data
+{
+    my( $self ) = @_;
+
+    my $repo = $self->{repository};
 
     # first get the Arkivum data
     my $storage = $repo->plugin("Storage::ArkivumV6");
@@ -268,48 +393,8 @@ sub render
     }
     my $files = $storage->_arkivum_get_request($files_endpoint, undef);
 
-    my %arkivum_files = ();
-    foreach my $file ( @{$files->{fileProperties}} )
-    {
-        #  print STDERR Dumper($file)."\n";
-        #next if $file->{directory} == 1;
-        $arkivum_files{$file->{path}} = $file->{lastModified};
-    }
-
-        my @sorted_files;
-    foreach my $file (sort { $arkivum_files{$b} cmp $arkivum_files{$a} } keys %arkivum_files )
-    {
-                push @sorted_files, $file;
-    }
-        my $json = encode_json \@sorted_files;
-
-        my $container_id = "arkivum_import";
-        $frag->appendChild( $repo->make_element( 'div', id => $container_id ) );
-
-        my $url = $repo->current_url( host => 1 );
-    my $parameters = URI->new;
-    $parameters->query_form(
-        $self->hidden_bits,
-    );
-    $parameters = $parameters->query;
-
-    my $prefix = "arkivum";
-
-    $frag->appendChild( $repo->make_javascript( <<"EOJ" ) );
-document.observe("dom:loaded", function() {
-    new EPrints_Screen_Arkivum_Loader( {
-        ids: $json,
-        step: 1,
-        prefix: '$prefix',
-        url: '$url',
-        parameters: '$parameters',
-        container_id: '$container_id',
-    } ).execute();
-});
-EOJ
-
-        return $frag
 }
+=cut
 
 sub to_json
 {
