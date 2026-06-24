@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<epm xmlns='http://eprints.org/ep2/data/2.0' id='http://localhost:8080/id/epm/arkivum_v6'>
+<epm xmlns='http://eprints.org/ep2/data/2.0' id='http://localhost:8081/id/epm/arkivum_v6'>
   <epmid>arkivum_v6</epmid>
   <uri>http://localhost:8080/id/epm/arkivum_v6</uri>
   <documents>
@@ -57,9 +57,9 @@
           <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
           <mime_type>text/plain</mime_type>
-          <hash>0c547b1c4da201645963d939492db409</hash>
+          <hash>d159bd72076def520ed971dd04bc93ad</hash>
           <hash_type>MD5</hash_type>
-          <filesize>7947</filesize>
+          <filesize>8099</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -73,9 +73,9 @@
           <datasetid>document</datasetid>
           <filename>lang/en/phrases/arkivum.xml</filename>
           <mime_type>application/xml</mime_type>
-          <hash>088963d7ebeb157ba1ac5bd002d3c1ec</hash>
+          <hash>2d389722cf2b83e9a90f1d6049f7bde6</hash>
           <hash_type>MD5</hash_type>
-          <filesize>18452</filesize>
+          <filesize>19298</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -105,9 +105,9 @@
           <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Screen/Admin/ArkivumImport.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>7937dd7cd1b61535704b609a3f8fa8ed</hash>
+          <hash>20cd5d9f347937efc8b69627ff775caf</hash>
           <hash_type>MD5</hash_type>
-          <filesize>8462</filesize>
+          <filesize>13138</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -119,19 +119,27 @@
         </file>
         <file>
           <datasetid>document</datasetid>
+          <filename>plugins/EPrints/Plugin/Screen/Public/RequestArkivum.pm</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>6a1de06e21e69bfa284ebdf2ff191857</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>10422</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>1caaceda1fffaca48ecb08af4681bdc0</hash>
+          <hash>3cba60ddb9cb655b2f9beb82e64c6ac0</hash>
           <hash_type>MD5</hash_type>
-          <filesize>17262</filesize>
+          <filesize>17475</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
           <filename>static/style/auto/arkivum_v6.css</filename>
           <mime_type>text/x-asm</mime_type>
-          <hash>38985fc90dae02c71f711fb39595fda1</hash>
+          <hash>5bac69dcfeb778ed3cedbbe8ee52d660</hash>
           <hash_type>MD5</hash_type>
-          <filesize>4520</filesize>
+          <filesize>4590</filesize>
         </file>
       </files>
       <mime_type>text/x-asm</mime_type>
@@ -140,7 +148,7 @@
       <content>install</content>
     </document>
   </documents>
-  <version>0.8</version>
+  <version>0.9</version>
   <creators>
     <item>
       <name>
