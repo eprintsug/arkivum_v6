@@ -305,4 +305,10 @@
 <epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_in_dir">In Directory: <epc:pin name="dir"/></epp:phrase>
 <epp:phrase id="Plugin/Screen/Admin/ArkivumImport:arkivum_back_to_root"><a href="/cgi/users/home?screen=Admin%3A%3AArkivumImport">Back to top directory</a></epp:phrase>
 
+
+<!-- Arkivum Request -->
+<epp:phrase id="Plugin/Screen/Public/RequestArkivum:title">Request document from our Digital Archive</epp:phrase>
+<epp:phrase id="Plugin/Screen/Public/RequestArkivum:request_arkivum:intro">This document is currently stored in our digital archive.<br/>If you would like access to this document, please contact our Digital Archive team at: </epp:phrase>
+<epp:phrase id="Plugin/Screen/Public/RequestArkivum:request_arkivum:subject">Request access to archived document (<epc:pin name="eprint"/> - <epc:pin name="document"/>)</epp:phrase>
+
 </epp:phrases>

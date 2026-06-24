@@ -20,13 +20,14 @@ $c->{plugins}{"Event::ArkivumV6"}{params}{disable} = 0;
 $c->{plugins}{"Storage::ArkivumV6"}{params}{disable} = 0;
 $c->{plugins}{"Screen::ArkivumV6"}{params}{disable} = 0;
 $c->{plugins}{"Screen::Admin::ArkivumImport"}{params}{disable} = 0;
+$c->{plugins}{"Screen::Public::RequestArkivum"}{params}{disable} = 0;
 $c->{plugins}{"Export::Bagit"}{params}{disable} = 0;
 
 $c->{arkivum}->{bagit_version} = '1.0';
 $c->{arkivum}->{bagit_encoding} = 'UTF-8';
 $c->{arkivum}->{path} = '/var/tmp/arkivum/test';
 $c->{arkivum}->{app_mount} = '/opt/eprints3';
-$c->{arkivum}->{max_local_size} = 5000000;
+$c->{arkivum}->{max_local_size} = 1; # keep this small, until we have a better mechanism in place for importing remote files
 
 ### Arkivum Namespace Identifiers
 $c->{arkivum}->{identifier_namespace} = "cs";
