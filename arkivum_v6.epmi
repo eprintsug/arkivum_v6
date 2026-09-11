@@ -1,66 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<epm xmlns='http://eprints.org/ep2/data/2.0' id='http://localhost:8081/id/epm/arkivum_v6'>
+<epm xmlns='http://eprints.org/ep2/data/2.0' id='http://localhost/id/epm/arkivum_v6'>
   <epmid>arkivum_v6</epmid>
-  <uri>http://localhost:8080/id/epm/arkivum_v6</uri>
+  <uri>http://localhost:8081/id/epm/arkivum_v6</uri>
   <documents>
     <document>
       <files>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>citations/arkivum/default.xml</filename>
-          <mime_type>application/xml</mime_type>
-          <hash>7dc902a049ca1fce8eaf259f1539d017</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>16647</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/bin/ingest_repository</filename>
-          <mime_type>text/x-perl</mime_type>
-          <hash>bf1fc7cdf7bbfd9381737c3727ab72a7</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>1107</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/bin/remove_all_arkivum_transactions</filename>
-          <mime_type>text/x-perl</mime_type>
-          <hash>c58509747eadadbdc926bf9facfc0642</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>685</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/bin/remove_arkivum_copies</filename>
-          <mime_type>text/x-perl</mime_type>
-          <hash>51d154b0411c8065480e79a7f5675beb</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>1392</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/bin/remove_old_arkivum_copies</filename>
-          <mime_type>text/x-perl</mime_type>
-          <hash>b0e307a4024db548e0c5ea62c43abe8c</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>1402</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/bin/swill_bucket</filename>
-          <mime_type>text/x-perl</mime_type>
-          <hash>906047904b1fd6c6b4c38d0ba093e0dc</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>938</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
-          <mime_type>text/plain</mime_type>
-          <hash>d159bd72076def520ed971dd04bc93ad</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>8099</filesize>
-        </file>
         <file>
           <datasetid>document</datasetid>
           <filename>epm/arkivum_v6/cgi/request_arkivum</filename>
@@ -68,14 +12,6 @@
           <hash>090302ac4f63cc6995364e5ed8078faf</hash>
           <hash_type>MD5</hash_type>
           <filesize>301</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
-          <filename>lang/en/phrases/arkivum.xml</filename>
-          <mime_type>application/xml</mime_type>
-          <hash>2d389722cf2b83e9a90f1d6049f7bde6</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>19298</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
@@ -95,6 +31,14 @@
         </file>
         <file>
           <datasetid>document</datasetid>
+          <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>3cba60ddb9cb655b2f9beb82e64c6ac0</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>17475</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Export/Bagit.pm</filename>
           <mime_type>text/plain</mime_type>
           <hash>4ff43ae05c6e32561fd351ecf3f1e2bc</hash>
@@ -111,14 +55,6 @@
         </file>
         <file>
           <datasetid>document</datasetid>
-          <filename>plugins/EPrints/Plugin/Screen/EPrint/ArkivumV6.pm</filename>
-          <mime_type>text/plain</mime_type>
-          <hash>619e1e5f9b8d03a31c347a182fe4f40e</hash>
-          <hash_type>MD5</hash_type>
-          <filesize>10331</filesize>
-        </file>
-        <file>
-          <datasetid>document</datasetid>
           <filename>plugins/EPrints/Plugin/Screen/Public/RequestArkivum.pm</filename>
           <mime_type>text/plain</mime_type>
           <hash>6a1de06e21e69bfa284ebdf2ff191857</hash>
@@ -127,28 +63,116 @@
         </file>
         <file>
           <datasetid>document</datasetid>
-          <filename>plugins/EPrints/Plugin/Storage/ArkivumV6.pm</filename>
+          <filename>plugins/EPrints/Plugin/Screen/EPrint/ArkivumV6.pm</filename>
           <mime_type>text/plain</mime_type>
-          <hash>3cba60ddb9cb655b2f9beb82e64c6ac0</hash>
+          <hash>619e1e5f9b8d03a31c347a182fe4f40e</hash>
           <hash_type>MD5</hash_type>
-          <filesize>17475</filesize>
+          <filesize>10331</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>lang/en/phrases/arkivum.xml</filename>
+          <mime_type>text/xml</mime_type>
+          <hash>2d389722cf2b83e9a90f1d6049f7bde6</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>19298</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>static/style/auto/arkivum_import.css</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>8ea6d820309a382f63512b27ea0b1888</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>2769</filesize>
         </file>
         <file>
           <datasetid>document</datasetid>
           <filename>static/style/auto/arkivum_v6.css</filename>
-          <mime_type>text/x-asm</mime_type>
+          <mime_type>text/plain</mime_type>
           <hash>5bac69dcfeb778ed3cedbbe8ee52d660</hash>
           <hash_type>MD5</hash_type>
           <filesize>4590</filesize>
         </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>static/javascript/auto/51_tabs_override.js</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>57be70d2ae54283f9ba262f3c083e9c8</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1207</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>static/javascript/auto/arkivum_import.js</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>c47571cba8ef28896f1f59593e38f313</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>14682</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>citations/arkivum/default.xml</filename>
+          <mime_type>text/xml</mime_type>
+          <hash>7dc902a049ca1fce8eaf259f1539d017</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>16647</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/cfg/cfg.d/z_arkivum.pl</filename>
+          <mime_type>text/plain</mime_type>
+          <hash>d159bd72076def520ed971dd04bc93ad</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>8099</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/swill_bucket</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>906047904b1fd6c6b4c38d0ba093e0dc</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>938</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_old_arkivum_copies</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>b0e307a4024db548e0c5ea62c43abe8c</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1402</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_arkivum_copies</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>51d154b0411c8065480e79a7f5675beb</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1392</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/ingest_repository</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>bf1fc7cdf7bbfd9381737c3727ab72a7</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>1107</filesize>
+        </file>
+        <file>
+          <datasetid>document</datasetid>
+          <filename>epm/arkivum_v6/bin/remove_all_arkivum_transactions</filename>
+          <mime_type>text/x-perl</mime_type>
+          <hash>c58509747eadadbdc926bf9facfc0642</hash>
+          <hash_type>MD5</hash_type>
+          <filesize>685</filesize>
+        </file>
       </files>
-      <mime_type>text/x-asm</mime_type>
+      <mime_type>text/x-perl</mime_type>
       <format>text</format>
-      <main>static/style/auto/arkivum_v6.css</main>
+      <main>epm/arkivum_v6/bin/remove_all_arkivum_transactions</main>
       <content>install</content>
     </document>
   </documents>
-  <version>0.9</version>
+  <version>0.10</version>
   <creators>
     <item>
       <name>
@@ -163,6 +187,7 @@
       </name>
     </item>
   </creators>
+  <datestamp>2026-09-11 07:43:10</datestamp>
   <title>Arkivum v6</title>
   <description>EPrints integration for Arkivum v6</description>
   <requirements>Net::Amazon::S3::Client
