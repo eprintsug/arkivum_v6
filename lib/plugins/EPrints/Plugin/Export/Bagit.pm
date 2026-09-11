@@ -28,7 +28,7 @@ sub new
 
     $self->{name} = "Bagit";
     $self->{accept} = [ 'dataobj/eprint', 'list/eprint' ]; 
-    $self->{visible} = "all";
+    $self->{visible} = "none";
     $self->{mimetype} = 'application/gzip';
 
     return $self;
